@@ -1,4 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/bash
+
+# https://infu.fyi/
 
 # Backup motd lmao
 # http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
@@ -13,39 +14,16 @@ if [[ ! -e "$PREFIX/etc/motd" ]] ; then cat <<END
 END
 fi
 
-# Command history tweaks:
-# - Append history instead of overwriting
-#   when shell exits.
-# - When using history substitution, do not
-#   exec command immediately.
-# - Do not save to history commands starting
-#   with space.
-# - Do not save duplicated commands.
-shopt -s histappend
-shopt -s histverify
-export HISTCONTROL=ignoreboth
-# No backlashes in bash next to $locations:
-shopt -u progcomp
-
     # customised PS1 prompt via https://github.com/jmatth/ezprompt
-# Show max 2 dirs in path
-PROMPT_DIRTRIM=2
 # Don't display error code if 0
 function nonzero_return() {
 	RETVAL=$?
 	[ $RETVAL -ne 0 ] && echo "-$RETVAL-"
 }
-
 export PS1="\[\e[35m\]\A\[\e[m\]\[\e[33;41m\]\`nonzero_return\`\[\e[m\] \w\[\e[32m\]\\$\[\e[m\] "
 
-# Handles nonexistent commands.
-# If user has entered command which invokes non-available
-# utility, command-not-found will give a package suggestions.
-if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then
-	command_not_found_handle() {
-		/data/data/com.termux/files/usr/libexec/termux/command-not-found "$1"
-	}
-fi
+# No backlashes in bash next to $locations:
+shopt -u progcomp
     
     # Aliases
 
@@ -136,7 +114,8 @@ alias etq="emacs -l ~/.emacs.d/EnonEmpty.el ~/xinfu/QN.org ~/xinfu/todo.org"
 alias ec="emacs -NW"
 
 # QuickTars, as I never remmember syntax
-alias tar?=cat <<EOF
+function tar?() {
+cat <<EOF
 =====HOW TO TAR=====
 EXAMPLE: tar czvf archive.tar.gz directory
  first flag "c" is for compressing
@@ -149,6 +128,7 @@ EXAMPLE: tar czvf archive.tar.gz directory
     and folder/file to be packed
 ===== ===== =====
 EOF
+}
 
 alias ip="ifconfig | grep inet"
 
@@ -166,7 +146,7 @@ dice #initiate random number
 echo -e "${YW}=====The Lucky Number:${NC}[${RED}"$throw"${NC}]${YW}=====${NC}"
 
 
-# phone locations I use often:
+# personal phone locations I use often:
 exports() {
 export dl=~/storage/downloads
 export ex=~/storage/external-1
@@ -176,6 +156,7 @@ export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy
 export gb=/storage/3439-6335/INFU/ARTS/GBcamera
 export -f cx
 export -f cX
+export -f tar?
 export EDITOR="emacs"
 }
 # Only export those in first shell
@@ -185,7 +166,7 @@ export EDITOR="emacs"
 # but not while inside Emacs!
 if [[ -z "$INSIDE_EMACS" ]]
 then
-    emacs -l ~/.emacs.d/EdiredTerm.el.el
+    emacs -l ~/.emacs.d/EdiredTerm.el
 else
 unalias e # to prevent accidental recursive hell
 fi
