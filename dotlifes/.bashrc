@@ -114,7 +114,7 @@ alias etq="emacs -l ~/.emacs.d/EnonEmpty.el ~/xinfu/QN.org ~/xinfu/todo.org"
 alias ec="emacs -NW"
 
 # QuickTars, as I never remmember syntax
-function tar?() {
+function tarhelp() {
 cat <<EOF
 =====HOW TO TAR=====
 EXAMPLE: tar czvf archive.tar.gz directory
@@ -156,7 +156,7 @@ export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy
 export gb=/storage/3439-6335/INFU/ARTS/GBcamera
 export -f cx
 export -f cX
-export -f tar?
+export -f tarhelp
 export EDITOR="emacs"
 }
 # Only export those in first shell
