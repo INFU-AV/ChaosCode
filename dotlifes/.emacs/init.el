@@ -244,7 +244,7 @@
 (define-key infu-map (kbd "B") 'switch-to-buffer-other-tab)
 (define-key infu-map (kbd "k") 'kill-buffer)
 (define-key infu-map (kbd "K") 'kill-buffer-and-window)
-(define-key infu-map (kbd "S") 'follow-delete-other-windows-and-split)
+(define-key infu-map (kbd "5") 'follow-delete-other-windows-and-split)
 (define-key infu-map (kbd "C-k") 'tab-close)
 (define-key infu-map (kbd "n") 'dired) ;for {n}avigation
  ; Rewrite this one as relative path:
@@ -265,7 +265,7 @@
 ;; (define-key infu-map (kbd "3") 'split-window-right)
 (define-key infu-map (kbd "<prior>") 'scroll-other-window-down)
 (define-key infu-map (kbd "<next>") 'scroll-other-window)
-(define-key infu-map (kbd "TAB ") 'markdown-shifttab) ;; because s-<TAB> doesn't work on termux lmao
+;; (define-key infu-map (kbd "TAB ") 'markdown-shifttab) ;; because s-<TAB> doesn't work on termux lmao
 
 ;; ( define-key evil-normal-state-map (kbd "l") "")
 
@@ -406,8 +406,8 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (define-key evil-motion-state-map (kbd "<home>") 'xah-beginning-of-line-or-block)
 (define-key evil-motion-state-map (kbd "<end>") 'xah-end-of-line-or-block)
     ;; xah-punctuation-regex
-(define-key evil-motion-state-map (kbd "C-<home>") 'xah-backward-punct)
-(define-key evil-motion-state-map (kbd "C-<end>") 'xah-forward-punct)
+(define-key evil-motion-state-map (kbd "<prior>") 'xah-backward-punct)
+(define-key evil-motion-state-map (kbd "<next>") 'xah-forward-punct)
     ;; xah-copy-file-path
 ; M-x ^
     ;; xah-dired-sort
