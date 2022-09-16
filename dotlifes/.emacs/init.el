@@ -826,4 +826,3 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 9 1000 1000))
-/
