@@ -128,11 +128,11 @@ fi
 
     # my Emacs aliases
 alias e="emacs"
-alias E="emacs -l ~/.emacs.d/E.el"
-# alias E="emacs -f dired-jump -f split-window -f term"
+alias E="emacs -l ~/.emacs.d/EdiredTerm.el"
 alias ep="emacs -f list-packages"
 alias ei="emacs --debug-init ~/.emacs.d/early-init.el ~/.emacs.d/init.el -f use-package-report -f split-window"
-alias et="emacs -l ~/.emacs.d/do.el ~/xinfu/QN.org ~/xinfu/todo.org"
+alias et="emacs -l ~/.emacs.d/EnonEmpty.el"
+alias etq="emacs -l ~/.emacs.d/EnonEmpty.el ~/xinfu/QN.org ~/xinfu/todo.org"
 alias ec="emacs -NW"
 
 # QuickTars, as I never remmember syntax
@@ -185,7 +185,7 @@ export EDITOR="emacs"
 # but not while inside Emacs!
 if [[ -z "$INSIDE_EMACS" ]]
 then
-    emacs -l ~/.emacs.d/EE.el
+    emacs -l ~/.emacs.d/EdiredTerm.el.el
 else
-unalias e
+unalias e # to prevent accidental recursive hell
 fi
