@@ -4,13 +4,15 @@
 # Backup motd lmao
 # http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
 # nr1 from https://fsymbols.com/text-art/
-if [[ ! -e "$PREFIX/etc/motd" ]] ; then cat <<END
+if [[ ! $SHLVL == 1 ]] || [[ ! -e "$PREFIX/etc/motd" ]]  ; then cat <<END
+
 .___ _______  _______________ ___  
 |   |\      \ \_   _____/    |   \ 
 |   |/   |   \ |    __) |    |   / 
 |   /    |    \|     \  |    |  /  
 |___\____|__  /\___  /  |______/   
             \/     \/
+
 END
 fi
 
