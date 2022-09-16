@@ -124,7 +124,6 @@
 ;; Make numeric backup versions unconditionally.
 (setq version-control t)
 (setq vc-make-backup-files t)
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
 
 ;; Do not create lock files.
 (setq create-lockfiles nil)
@@ -287,7 +286,7 @@
    ("2"       split-window-below "✂" :color blue )
    ("3"       split-window-right "✄" :color blue )
    ("8"       balance-windows "⚖" :color blue ))
-(define-key infu-map (kbd "W") 'hydra-window/body)
+(define-key infu-map (kbd "W") 'hydra-window/body) ; capital W
 (defhydra hydra-tab-bar (:color amaranth)
   "Tab Bar Operations:"
   ("t" tab-new "Just new" :column "New Tab")
@@ -300,7 +299,7 @@
   ("<right>" tab-next "Tab ->" :column "Navigation")
   ("<left>" tab-previous "<- Tab")
   ("q" nil "Exit" :exit t))
-(define-key infu-map (kbd "w") 'hydra-tab-bar/body)
+(define-key infu-map (kbd "w") 'hydra-tab-bar/body) ; small w
 )
 
         (use-package abbrev
@@ -308,7 +307,6 @@
     ;; :defer 1
 ;; abbrev-mode xah style http://xahlee.info/emacs/emacs/emacs_abbrev_mode.html
     :config
-; Fix the path, also figure out path-free combo to reach it
 (setq abbrev-file-name "~/.emacs.d/elisp/my-abbrev.el")
 ;; (setq abbrev-file-name "/data/data/com.termux/files/home/.emacs.d/elisp/my-abbrev.el")
 )
@@ -324,8 +322,7 @@
 (setq ido-default-file-method 'selected-window)
 ;; use current pane for newly switched buffer
 (setq ido-default-buffer-method 'selected-window)
-    :config
-      (ido-mode 1))
+    :config (ido-mode 1))
 
 	(use-package icomplete 
     ;; show choices vertically
@@ -339,8 +336,7 @@
 (define-key icomplete-minibuffer-map (kbd "<right>") 'icomplete-forward-completions)
 (define-key icomplete-minibuffer-map (kbd "<left>") 'icomplete-backward-completions)
 (define-key icomplete-minibuffer-map (kbd "M-<RET>") 'icomplete-force-complete-and-exit)
-(icomplete-mode 1)
-)
+(icomplete-mode 1))
 
         (use-package savehist
     ;; :ensure nil
@@ -401,7 +397,7 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 
     ;; to not overload my init.el with
     ;; tons blocks of code, i split it here:
-(load "~/.emacs.d/bonus.el")
+(load "~/.emacs.d/bonus.el" nil t)
 
     ;; xah-comment-dwim
 (define-key evil-normal-state-map (kbd "g c") 'xah-comment-dwim)
@@ -495,7 +491,7 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
  
-	      (use-package markdown-mode
+	(use-package markdown-mode
     :mode ("README\\.md\\'" . gfm-mode)
     :init (setq markdown-command "multimarkdown")
 (setq markdown-reference-location "immediately")
@@ -558,7 +554,7 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 ("c" . hydra-zk/body)
 ("C" . zk-index)))
 
-	      (use-package zk-index
+      	(use-package zk-index
     :after zk
     :config (zk-index-setup-embark)
     :custom (zk-index-desktop-directory zk-directory))
@@ -614,7 +610,7 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 
       	(use-package hideshow)
 
-	      (use-package command-log-mode
+	(use-package command-log-mode
 	;log commands you typed in;  
     :commands (command-log-mode))
 
@@ -786,9 +782,10 @@ or else the correct item might not be found in the `*Completions*' buffer."
     :random-color-luminance-range (0.5 0.8)))
 (huecycle-when-idle 1.4))
 
-(load-theme 'modus-vivendi)
-
-        (use-package auto-dim-other-buffers
+	(load-theme 'modus-vivendi)
+    	; built-in theme ;
+    
+	(use-package auto-dim-other-buffers
       	; self-explainatory ;
     ;; :init
     :config
@@ -798,7 +795,6 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
         (use-package hl-line
     ;; :diminish global-hl-line-mode
-    :init
     :config
 (global-hl-line-mode 1)
  ;;    :custom
@@ -817,6 +813,11 @@ or else the correct item might not be found in the `*Completions*' buffer."
 ;; (setq auto-window-vscroll nil) ; (lags?)
 (setq echo-keystrokes 0.1) ; show key-combos quickly
 
+;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+;; ----- Closing:
+;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 (message "Init file finished!")
