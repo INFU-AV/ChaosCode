@@ -26,6 +26,8 @@ export PS1="\[\e[35m\]\A\[\e[m\]\[\e[33;41m\]\`nonzero_return\`\[\e[m\] \w\[\e[3
 
 # No backlashes in bash next to $locations:
 shopt -u progcomp
+# Custom location for .bash_history file:
+export HISTFILE=~/.termux/.bash_history 
     
     # Aliases
 
@@ -53,7 +55,7 @@ alias c="clear"
 alias n="nano -m" #Mouse support
 alias ncdu="ncdu -q"
 # personalized neofetch
-alias Neo="neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny " # --color_blocks off"
+alias Neo="neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config" # --color_blocks off"
 
 # turn "ls" into "exa" for faster colourful usage
 alias ls="exa   -aF  --group-directories-first"
