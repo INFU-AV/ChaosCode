@@ -104,7 +104,6 @@
 
 ; Do not steal focus while doing async compilations
 ;; (setq warning-suppress-types '((comp)))
-
       	(use-package no-littering
         ;makes sure other packages won't make mess;
     :init
@@ -212,7 +211,7 @@
 (global-set-key [mouse-5] 'scroll-up-line)
 (global-set-key  (kbd "M-<f10>") `context-menu-open) ; because shift-f10 rarely works on Termux keybs
 (global-subword-mode 1) 
-(setq confirm-kill-processes nil)
+(setq confirm-kill-processes nil) ; because my bash term threw errors on exit
 
 
     ;; my custom keymap: INFU-map ;;
@@ -244,14 +243,14 @@
 (define-key infu-map (kbd "B") 'switch-to-buffer-other-tab)
 (define-key infu-map (kbd "k") 'kill-buffer)
 (define-key infu-map (kbd "K") 'kill-buffer-and-window)
-(define-key infu-map (kbd "S") 'follow-delete-other-windows-and-split)
+(define-key infu-map (kbd "5") 'follow-delete-other-windows-and-split)
 (define-key infu-map (kbd "C-k") 'tab-close)
 (define-key infu-map (kbd "n") 'dired) ;for {n}avigation
  ; Rewrite this one as relative path:
 (define-key infu-map (kbd "A") (lambda() (interactive)(find-file "~/.emacs.d/elisp/my-abbrev.el"))) 
 (define-key infu-map (kbd "t") 'tab-bar-new-tab)
 ;; (define-key infu-map (kbd "t") (lambda() (interactive)(find-file "~/xinfu/todo.md")))
-(define-key infu-map (kbd "x") 'hs-minor-mode)
+;; (define-key infu-map (kbd "") 'hs-minor-mode)
 (define-key infu-map (kbd "1") 'delete-other-windows)
 (define-key infu-map (kbd "C-m") 'bookmark-bmenu-list)
 (define-key infu-map (kbd "m") 'bookmark-jump)
@@ -265,7 +264,7 @@
 ;; (define-key infu-map (kbd "3") 'split-window-right)
 (define-key infu-map (kbd "<prior>") 'scroll-other-window-down)
 (define-key infu-map (kbd "<next>") 'scroll-other-window)
-(define-key infu-map (kbd "TAB ") 'markdown-shifttab) ;; because s-<TAB> doesn't work on termux lmao
+;; (define-key infu-map (kbd "TAB ") 'markdown-shifttab) ;; because s-<TAB> doesn't work on termux lmao
 
 ;; ( define-key evil-normal-state-map (kbd "l") "")
 
@@ -395,9 +394,21 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (add-to-list 'recentf-exclude no-littering-etc-directory)
 (recentf-mode 1))
 
+    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
     ;; to not overload my init.el with
     ;; tons blocks of code, i split it here:
 (load "~/.emacs.d/bonus.el" nil t)
+    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+
+        (use-package infu-bionic-face
+    :load-path "elisp/infu-bionic-face/"
+    :ensure nil
+    :commands (infu-bionic-reading-buffer - infu-bionic-reading-region))
+ 
+        (use-package xah-space-to-newline
+    :load-path "elisp/xah-space-to-newline/"
+    :ensure nil
+    :commands (xah-space-to-newline))
 
     ;; xah-comment-dwim
 (define-key evil-normal-state-map (kbd "g c") 'xah-comment-dwim)
@@ -406,22 +417,12 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (define-key evil-motion-state-map (kbd "<home>") 'xah-beginning-of-line-or-block)
 (define-key evil-motion-state-map (kbd "<end>") 'xah-end-of-line-or-block)
     ;; xah-punctuation-regex
-(define-key evil-motion-state-map (kbd "C-<home>") 'xah-backward-punct)
-(define-key evil-motion-state-map (kbd "C-<end>") 'xah-forward-punct)
+(define-key evil-motion-state-map (kbd "<prior>") 'xah-backward-punct)
+(define-key evil-motion-state-map (kbd "<next>") 'xah-forward-punct)
     ;; xah-copy-file-path
 ; M-x ^
     ;; xah-dired-sort
 (evil-define-key 'normal dired-mode-map (kbd "s") 'xah-dired-sort)
-
-        (use-package infu-bionic-face
-    :load-path "/elisp/infu-bionic-face"
-    :ensure nil
-    :commands (infu-bionic-reading-buffer - infu-bionic-reading-region))
- 
-        (use-package xah-space-to-newline
-    :load-path "/elisp/xah-space-to-newline"
-    :ensure nil
-    :commands (xah-space-to-newline))
 
         (use-package winner
 	      ; undo-window changes ;
@@ -588,9 +589,8 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 
       	(use-package xclip
 	; Android clipboard integration
-    :if (eq system-type 'gnu/linux)
-    :config (xclip-mode 1))
-
+    ;; :if (eq system-configuration 'aarch64-unknown-linux-android)
+    :config (xclip-mode 1)
 ; ↓ setting default browser so
 ; ↓ Emacs asks which one to use per link
 ; ↓ Android-specific, requires "termux-api"
@@ -598,6 +598,8 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (lambda (url &rest args)
 (start-process-shell-command "open-url" nil (concat "am start -a android.intent.action.VIEW -d " url))))
 (global-set-key [mouse-2] #'ffap-at-mouse)
+)
+
 
         (use-package electric
 	; turn off all indents as I do my own here ;
@@ -634,12 +636,12 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 
         (use-package tab-bar
     :config (tab-bar-mode)
-;; (tab-bar-history-mode)
 (define-key evil-normal-state-map (kbd "g C-t") 'tab-bar-new-tab)
 (define-key evil-normal-state-map (kbd "T") 'tab-bar-switch-to-prev-tab)
 (define-key evil-normal-state-map (kbd "t") 'tab-bar-switch-to-next-tab)
 ;; (define-key evil-normal-state-map (kbd "g C-t") 'tab-bar-new-tab)
 (define-key evil-normal-state-map (kbd "g M-t") 'tab-close)
+(setq tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator tab-bar-format-add-tab tab-bar-separator current-time-string))
 )
 
 ; giving sosme kind of usefulness to scratch
@@ -717,8 +719,11 @@ or else the correct item might not be found in the `*Completions*' buffer."
     :hook (after-init . doom-modeline-mode)
     :init 
     ;; custom clock:
-(add-to-list 'global-mode-string '(:eval (emacs-uptime "%h:%.2m:%s")))
+(setq doom-modeline-display-misc-in-all-mode-lines t)
+(setq mode-line-misc-info '(:eval (emacs-uptime "%h:%.2m:%s")))
+(setq doom-modeline-time nil) 
     :config
+;; (add-to-list 'mode-line-format-maim '(:eval (emacs-uptime "%h:%.2m:%s")))
 (setq mode-line-compact 'long)
 (setq doom-modeline-buffer-encoding 'nondefault)
 (setq doom-modeline-window-width-limit 40)
