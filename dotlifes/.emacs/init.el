@@ -212,7 +212,7 @@
 (global-set-key [mouse-5] 'scroll-up-line)
 (global-set-key  (kbd "M-<f10>") `context-menu-open) ; because shift-f10 rarely works on Termux keybs
 (global-subword-mode 1) 
-(setq confirm-kill-processes nil)
+(setq confirm-kill-processes nil) ; because my bash term threw errors on exit
 
 
     ;; my custom keymap: INFU-map ;;
@@ -251,7 +251,7 @@
 (define-key infu-map (kbd "A") (lambda() (interactive)(find-file "~/.emacs.d/elisp/my-abbrev.el"))) 
 (define-key infu-map (kbd "t") 'tab-bar-new-tab)
 ;; (define-key infu-map (kbd "t") (lambda() (interactive)(find-file "~/xinfu/todo.md")))
-(define-key infu-map (kbd "x") 'hs-minor-mode)
+;; (define-key infu-map (kbd "x") 'hs-minor-mode)
 (define-key infu-map (kbd "1") 'delete-other-windows)
 (define-key infu-map (kbd "C-m") 'bookmark-bmenu-list)
 (define-key infu-map (kbd "m") 'bookmark-jump)
@@ -640,9 +640,10 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (define-key evil-normal-state-map (kbd "t") 'tab-bar-switch-to-next-tab)
 ;; (define-key evil-normal-state-map (kbd "g C-t") 'tab-bar-new-tab)
 (define-key evil-normal-state-map (kbd "g M-t") 'tab-close)
+(setq tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator tab-bar-format-add-tab tab-bar-separator current-time-string)) 
 )
 
-; giving sosme kind of usefulness to scratch
+; giving some kind of usefulness to scratch
 (setq initial-scratch-message (current-time-string))
 
 	(use-package tooltip
@@ -717,7 +718,10 @@ or else the correct item might not be found in the `*Completions*' buffer."
     :hook (after-init . doom-modeline-mode)
     :init 
     ;; custom clock:
-(add-to-list 'global-mode-string '(:eval (emacs-uptime "%h:%.2m:%s")))
+(setq doom-modeline-display-misc-in-all-mode-lines t)
+(setq mode-line-misc-info '(:eval (emacs-uptime "%h:%.2m:%s")))
+(setq doom-modeline-time nil) 
+;; (add-to-list 'global-mode-string '(:eval (emacs-uptime "%h:%.2m:%s")))
     :config
 (setq mode-line-compact 'long)
 (setq doom-modeline-buffer-encoding 'nondefault)
