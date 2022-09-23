@@ -11,13 +11,13 @@ echo " --------------"
 # echo "-2)----IT/PC---"
 # echo "-3)------AUDIO-"
 
-yes | pkg update ; yes | pkg install exa emacs man ttyd sox git neofetch ack ffmpeg python ncdu p7zip termux-api ; termux-setup-storage
+yes | pkg update ; pkg install exa emacs man ttyd sox git neofetch ffmpeg python ncdu p7zip termux-api ; termux-setup-storage
 cd ~
 git clone  https://github.com/INFU-AV/ChaosCode
 cd ChaosCode/dotfiles
-mv -f .termux/ ~/.termux
-mv -f .bashrc/ ~/.bashrc
-rm -fr ~.emacs.d
-mv -f .emacs.d/ ~
+mv -f .termux ~
+mv -f .bashrc ~
+mv -f .emacs.d ~
+Mv -f motd $PREFIX/etc/motd
 cd ~
 rm -fr ChaosCode/
