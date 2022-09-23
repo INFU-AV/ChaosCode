@@ -15,8 +15,9 @@ yes | pkg update ; yes | pkg install exa emacs man ttyd sox git neofetch ack ffm
 cd ~
 git clone  https://github.com/INFU-AV/ChaosCode
 cd ChaosCode/dotfiles
-mv -f .termux ~/.termux
-mv -f .bashrc ~/.bashrc
-mv -f .emacs.d ~/.emacs.d
+mv -f .termux/ ~/.termux
+mv -f .bashrc/ ~/.bashrc
+rm -fr ~.emacs.d
+mv -f .emacs.d/ ~
 cd ~
 rm -fr ChaosCode/
