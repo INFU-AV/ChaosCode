@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-cd $HOME/.termux/
+cd "$HOME/.termux/"
 # This script swaps Termux properties file for 2nd one. Needs `termux-reload-settings`
 # diff exits with code 0 only if files are same!
 diff -b termux.properties Rtermux.properties > /dev/null
