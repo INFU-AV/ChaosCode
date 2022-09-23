@@ -102,8 +102,12 @@
  ;; (setq custom-file (concat user-emacs-directory "custom.el"))
  ;; (load custom-file 'noerror)
 
+        (use-package async
+    :config
+(async-bytecomp-package-mode 1)
 ; Do not steal focus while doing async compilations
-;; (setq warning-suppress-types '((comp)))
+(setq warning-suppress-types '((comp)))) 
+
       	(use-package no-littering
         ;makes sure other packages won't make mess;
     :init
@@ -117,7 +121,7 @@
 ;; Save backup files to a dedicated directory.
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 (setq delete-old-versions t)
-(setq kept-new-versions 5)
+(setq kept-new-versions 4)
 (setq kept-old-versions 2)
 
 ;; Make numeric backup versions unconditionally.
@@ -255,8 +259,6 @@
 (define-key infu-map (kbd "C-m") 'bookmark-bmenu-list)
 (define-key infu-map (kbd "m") 'bookmark-jump)
 (define-key infu-map (kbd "M") 'bookmark-set)
-;; since normal-mode "m" is marking things, we go back to them with
-(define-key infu-map (kbd "v") 'evil-goto-mark) 
 (define-key infu-map (kbd "!") 'delete-window)
 (define-key infu-map (kbd "j") 'term)
 (define-key infu-map (kbd "2") 'split-and-follow-horizontally)
@@ -266,6 +268,8 @@
 (define-key infu-map (kbd "<next>") 'scroll-other-window)
 ;; (define-key infu-map (kbd "TAB ") 'markdown-shifttab) ;; because s-<TAB> doesn't work on termux lmao
 
+;; since normal-mode "m" is marking things, we go back to them with	
+( define-key evil-normal-state-map (kbd "M") 'evil-goto-mark)
 ;; ( define-key evil-normal-state-map (kbd "l") "")
 
 	(use-package hydra
@@ -306,9 +310,8 @@
     ;; :defer 1
 ;; abbrev-mode xah style http://xahlee.info/emacs/emacs/emacs_abbrev_mode.html
     :config
-(setq abbrev-file-name "~/.emacs.d/elisp/my-abbrev.el")
 ;; (setq abbrev-file-name "/data/data/com.termux/files/home/.emacs.d/elisp/my-abbrev.el")
-)
+(setq abbrev-file-name "~/.emacs.d/elisp/my-abbrev.el"))
 
         (use-package ido
 	;; :ensure nil
@@ -340,7 +343,6 @@
         (use-package savehist
     ;; :ensure nil
     :config (savehist-mode 1))
- 
 
         (use-package isearch
     :ensure nil)
@@ -357,8 +359,6 @@ completion-category-defaults nil
 completion-category-overrides '((file (styles basic partial-completion)))))
 
 	(use-package recentf
-    ;; :ensure nil
-    :defer 1
     :config
 (setq recentf-exclude '("/tmp/"
                         "/ssh:"
@@ -442,7 +442,6 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 ("ESC <down>" . move-text-down)
 ("M-<down>" . move-text-down))
 
-
 ;; Multiplayer emacs packages
   (use-package impatient-mode  :disabled)
   (use-package impatient-showdown-mode  :disabled)
@@ -465,7 +464,7 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 (kbd "C-N") 'dired-create-directory)
 (setq dired-kill-when-opening-new-dired-buffer t) ; NEW in Emacs 28
 (setq dired-dwim-target t) ; suggest file-path of another open Dired buffer if there is one
-(setq dired-hide-details-mode 1)
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
     :custom
 ((dired-listing-switches "-agho --group-directories-first")))
 
@@ -590,15 +589,15 @@ completion-category-overrides '((file (styles basic partial-completion)))))
       	(use-package xclip
 	; Android clipboard integration
     ;; :if (eq system-configuration 'aarch64-unknown-linux-android)
-    :config (xclip-mode 1)
+    :config (xclip-mode 1))
+
 ; ↓ setting default browser so
 ; ↓ Emacs asks which one to use per link
 ; ↓ Android-specific, requires "termux-api"
-    (advice-add 'browse-url-default-browser :override
-(lambda (url &rest args)
-(start-process-shell-command "open-url" nil (concat "am start -a android.intent.action.VIEW -d " url))))
-(global-set-key [mouse-2] #'ffap-at-mouse)
-)
+;     (advice-add 'browse-url-default-browser :override
+; (lambda (url &rest args)
+; (start-process-shell-command "open-url" nil (concat "am start -a android.intent.action.VIEW -d " url))))
+;  (global-set-key [mouse-2] #'ffap-at-mouse)
 
 
         (use-package electric
@@ -645,7 +644,9 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 )
 
 ; giving sosme kind of usefulness to scratch
-(setq initial-scratch-message (current-time-string))
+; (setq initial-scratch-message (current-time-string))
+; giving sosme kind of usefulness to scratch
+;; (setq initial-scratch-message (shell-command-to-string "neofetch --stdout --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off"))
 
 	(use-package tooltip
     :ensure nil
@@ -669,17 +670,24 @@ completion-category-overrides '((file (styles basic partial-completion)))))
 
       	(use-package evil-terminal-cursor-changer
 	;first cosmetics I installed, beautify cursors;  
-    :load-path "elisp/evil-terminal-cursor-changer-final"
-	;using version 7696122 committed on 25 Dec 2021; 
-    ;; :pin manual
-    :config 
-    (setq evil-insert-state-cursor '("blue" hollow)
-    evil-emacs-state-cursor '("magenta" hbar)
-    evil-normal-state-cursor '("green" box)
-    evil-visual-state-cursor '("orange" box)
-    evil-operator-state-cursor '("red" hbar)
-    evil-replace-state-cursor '("magenta" hollow)
-    evil-motion-state-cursor '("yellow" box))
+    :custom
+(setq etcc-use-color t)
+;; (setq etcc-term-type-override 'Dumb)
+    :config (setq
+evil-insert-state-cursor   '("blue" bar)
+evil-emacs-state-cursor    '("magenta" hbar)
+evil-normal-state-cursor   '("green" box)
+evil-visual-state-cursor   '("orange" box)
+evil-operator-state-cursor '("red" hbar)
+evil-replace-state-cursor  '("magenta" bar)
+evil-motion-state-cursor   '("yellow" box))
+; newest update seems to kill my colors and shapes, this fixes it:
+(defadvice evil-set-cursor (after etcc--evil-set-cursor (arg) activate)
+  (unless (display-graphic-p)
+    (etcc--evil-set-cursor)))
+(defadvice evil-set-cursor-color (after etcc--evil-set-cursor (arg) activate)
+    (unless (display-graphic-p)
+    (etcc--evil-set-cursor-color arg)))
 (evil-terminal-cursor-changer-activate) ; or (etcc-on)
 )
 
@@ -722,7 +730,10 @@ or else the correct item might not be found in the `*Completions*' buffer."
 (setq doom-modeline-display-misc-in-all-mode-lines t)
 (setq mode-line-misc-info '(:eval (emacs-uptime "%h:%.2m:%s")))
 (setq doom-modeline-time nil) 
+(setq inhibit-compacting-font-caches t)
+(setq find-file-visit-truename t)
     :config
+ ;; (set-face-background 'mode-line-inactive "black")
 ;; (add-to-list 'mode-line-format-maim '(:eval (emacs-uptime "%h:%.2m:%s")))
 (setq mode-line-compact 'long)
 (setq doom-modeline-buffer-encoding 'nondefault)
@@ -753,7 +764,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
         (use-package huecycle
     ;; :diminish huecycle-mode
     ; colour-flashing eye candy ;
-    :defer 2
+    :defer 1
     ;; :init
     :config
     (huecycle-set-faces
