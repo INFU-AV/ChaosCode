@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
-;; (setq user-full-name "INFU")
+(setq user-login-name "INFU")
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ; - - FORMARRING WARNING - -
@@ -837,6 +837,8 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 (message "Init file finished!")
+
+(setq inhibit-startup-echo-area-message "INFU")
 
 ; personal organiser I want to see on startup ;
 (find-file "~/xinfu/todo.md")

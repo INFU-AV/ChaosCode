@@ -4,7 +4,7 @@
 # Backup motd lmao
 # http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
 # nr1 from https://fsymbols.com/text-art/
-if [[ ! $SHLVL == 1 ]] || [[ ! -e "$PREFIX/etc/motd" ]]  ; then cat <<END
+if [[ ! $SHLVL == 1 ]]  ; then cat <<END
 
 .___ _______  _______________ ___  
 |   |\      \ \_   _____/    |   \ 
@@ -22,11 +22,15 @@ function nonzero_return() {
 	RETVAL=$?
 	[ $RETVAL -ne 0 ] && echo "-$RETVAL-"
 }
-export PS1="\[\e[35m\]\A\[\e[m\]\[\e[33;41m\]\`nonzero_return\`\[\e[m\] \w\[\e[32m\]\\$\[\e[m\] "
+export PS1="\[\e[35m\]\A\[\e[m\]\[\e[33;41m\]\`nonzero_return\`\[\e[m\] \w\[\e[32m\]\\$\[\e[m\]"
 
 # No backlashes in bash next to $locations:
 shopt -u progcomp
-    
+# Custom location for .bash_history file:
+export HISTFILE=~/.termux/.bash_history
+# Don't to see .lesshst file at all:
+export LESSHISTFILE=/dev/null
+
     # Aliases
 
 # Navigation
@@ -53,19 +57,17 @@ alias c="clear"
 alias n="nano -m" #Mouse support
 alias ncdu="ncdu -q"
 # personalized neofetch
-alias Neo="neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny " # --color_blocks off"
+alias Neo="neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off"
 
 # turn "ls" into "exa" for faster colourful usage
-alias ls="exa   -aF  --group-directories-first"
+alias ls="exa   -aF  --group-directories-first -s modified"
+alias lse="exa   -aF  --group-directories-first -s extension"
 alias lsr="exa  -aF  --group-directories-first -R"
 alias lst="exa  -aF  --group-directories-first -T --level=3"
-alias lso="exa  -aF1 --group-directories-first"
+alias lso="exa  -aF1 --group-directories-first -s name"
 alias lsor="exa -aF1 --group-directories-first -R"
 alias lsot="exa -aF1 --group-directories-first -T --level=3"
-alias lsm="exa  -aF  --group-directories-first -s newest"
-alias lsmr="exa -aF  --group-directories-first -s newest -R"
-alias lsmt="exa -aF  --group-directories-first -s newest -T --level=3"
-    
+
     # follow every "cd" command with "ls"
 function cd() {
     DIR="$*";   
@@ -147,9 +149,12 @@ throw=$(( $RANDOM % 10 ))
 dice #initiate random number
 echo -e "${YW}=====The Lucky Number:${NC}[${RED}"$throw"${NC}]${YW}=====${NC}"
 
+function swap() {
+bash ~/.termux/swap.sh ; termux-reload-settings
+} 
 
 # personal phone locations I use often:
-exports() {
+    exports() {
 export dl=~/storage/downloads
 export ex=~/storage/external-1
 export sc=~/xinfu/scripts/
@@ -159,6 +164,7 @@ export gb=/storage/3439-6335/INFU/ARTS/GBcamera
 export -f cx
 export -f cX
 export -f tarhelp
+export -f swap
 export EDITOR="emacs"
 }
 # Only export those in first shell
