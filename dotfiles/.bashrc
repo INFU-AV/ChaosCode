@@ -28,7 +28,19 @@ builtin cd "${DIR}" && \
 } # it will also take aliases from above
 
 mkcd() { # Make folder and enter it
-NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
+mkdir -p "$1" || echo "Error: Could not create directory, check permissions"; return 1 # If we can't create the directory, return an error
+cd "$1" || { printf '%b\n' \
+    "Error: Created directory, but could not enter it." \
+    "How would you like to proceed?" \
+    "" \
+    "[K]eep directory (default) / [R]emove directory"
+    local cd_fail
+        while read -rn 1 cd_fail; do # If the `cd` fails for whatever reason, prompt the user whether to keep the directory
+            [[ $cd_fail =~ ^[\sKk]?$ ]] && break # On whitespace, no input or [Kk], keep the directory
+            [[ $cd_fail =~ ^[Rr]$ ]] && rm -I "$1"; break # On [Rr] remove the directory, prompt the user if its not empty.
+        done
+    return 1; } # return an error
+}
 
     # quick termux clipboard
 cx() {
