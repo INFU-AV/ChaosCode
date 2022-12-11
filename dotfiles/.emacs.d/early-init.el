@@ -3,6 +3,7 @@
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.1)
 
+(setq package-native-compile t)
 (setq-default native-comp-speed 3)
 ;;    native-comp-deferred-compilation nil)
 
@@ -20,11 +21,11 @@
 (menu-bar-mode -1)          ; Disable the menu bar
 
 (modify-all-frames-parameters '((width . 80)
-                                (height . 50)
-                                (left . 0)
-                                (right . 0)
-                                (internal-border-width . 1)))
-(setq-default frame-title-format '("%b  -  GNU Emacs"))
+                            (height . 50)
+                            (left . 0)
+                            (right . 0)
+                            (internal-border-width . 1)))
+(setq-default frame-title-format '("%b - INFUmacs"))
 (setq frame-inhibit-implied-resize t)
 (setq file-name-handler-alist nil)
 
@@ -43,3 +44,4 @@
     ;; (setq idle-update-delay 1.0)  
 
 ;; (setq package-enable-at-startup nil)
+;; (blink-cursor-mode nil)

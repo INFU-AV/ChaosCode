@@ -16,39 +16,6 @@
 
 ;;;;;;;;;;;;xahutils-start
 
-(defun xah-beginning-of-line-or-block ()
-  "Move cursor to beginning of line or previous paragraph.
-• When called first time, move cursor to beginning of char in current line. (if already, move to beginning of line.)
-• When called again, move cursor backward by jumping over any sequence of whitespaces containing 2 blank lines.
-URL `http://xahlee.info/emacs/emacs/emacs_keybinding_design_beginning-of-line-or-block.html'
-Version 2017-05-13"
-  (interactive)
-  (let (($p (point)))
-    (if (or (equal (point) (line-beginning-position))
-            (equal last-command this-command ))
-        (if (re-search-backward "\n[\t\n ]*\n+" nil "NOERROR")
-            (progn
-              (skip-chars-backward "\n\t ")
-              (forward-char ))
-          (goto-char (point-min)))
-      (progn
-        (back-to-indentation)
-        (when (eq $p (point))
-          (beginning-of-line))))))
-
-(defun xah-end-of-line-or-block ()
-  "Move cursor to end of line or next paragraph.
-• When called first time, move cursor to end of line.
-• When called again, move cursor forward by jumping over any sequence of whitespaces containing 2 blank lines.
-URL `http://xahlee.info/emacs/emacs/emacs_keybinding_design_beginning-of-line-or-block.html'
-Version 2017-05-30"
-  (interactive)
-  (if (or (equal (point) (line-end-position))
-          (equal last-command this-command ))
-      (progn
-        (re-search-forward "\n[\t\n ]*\n+" nil "NOERROR" ))
-    (end-of-line)))
-
 (defun xah-comment-dwim ()
     "Like `comment-dwim', but toggle comment if cursor is not at end of line.
 URL `http://xahlee.info/emacs/emacs/emacs_toggle_comment_by_line.html'
@@ -112,24 +79,121 @@ Version: 2018-12-23 2022-04-07"
      (t (error "logic error 09535" )))
     (dired-sort-other xarg )))
 
-(defvar xah-punctuation-regex nil "A regex string for the purpose of moving cursor to a punctuation.")
-(setq xah-punctuation-regex "[\\!\?\"\.'#$%&*+,/:;<=>@^`|~]+")
-(defun xah-forward-punct (&optional n)
-  "Move cursor to the next occurrence of punctuation.
-The list of punctuations to jump to is defined by `xah-punctuation-regex'
-URL `http://xahlee.info/emacs/emacs/emacs_jump_to_punctuations.html'
-Version 2017-06-26"
-  (interactive "p")
-  (re-search-forward xah-punctuation-regex nil t n))
-(defun xah-backward-punct (&optional n)
-  "Move cursor to the previous occurrence of punctuation.
-See `xah-forward-punct'
-URL `http://xahlee.info/emacs/emacs/emacs_jump_to_punctuations.html'
-Version 2017-06-26"
-  (interactive "p")
-  (re-search-backward xah-punctuation-regex nil t n))
+(defvar infu-bionic-reading-face nil "a face for `infu-bionic-reading-region'.")
+(setq infu-bionic-reading-face 'error)
+;; (setq infu-bionic-reading-face 'error)
+;; try
+;; 'bold
+;; 'error
+;; 'warning
+;; 'highlight
+;; or any value of M-x list-faces-display
+(defun infu-bionic-reading-buffer ()
+  "Bold the first few chars of every word in current buffer.
+Version 2022-05-21"
+  (interactive)
+  (infu-bionic-reading-region (point-min) (point-max)))
+(defun infu-bionic-reading-region (Begin End)
+  "Bold the first few chars of every word in region.
+Version 2022-05-21"
+  (interactive "r")
+  (let (xBounds xWordBegin xWordEnd  )
+    (save-restriction
+      (narrow-to-region Begin End)
+      (goto-char (point-min))
+      (while (forward-word)
+        ;; bold the first half of the word to the left of cursor
+        (setq xBounds (bounds-of-thing-at-point 'word))
+        (setq xWordBegin (car xBounds))
+        (setq xWordEnd (cdr xBounds))
+        (setq xBoldEndPos (+ xWordBegin (1+ (/ (- xWordEnd xWordBegin) 2))))
+        (put-text-property xWordBegin xBoldEndPos
+                           'font-lock-face infu-bionic-reading-face)))))
+(defvar infu-bionic-reading-face nil "a face for `infu-bionic-reading-region'.")
+(setq infu-bionic-reading-face 'bold)
+;; (setq infu-bionic-reading-face 'error)
+;; try
+;; 'bold
+;; 'error
+;; 'warning
+;; 'highlight
+;; or any value of M-x list-faces-display
+(defun infu-bionic-reading-buffer ()
+  "Bold the first few chars of every word in current buffer.
+Version 2022-05-21"
+  (interactive)
+  (infu-bionic-reading-region (point-min) (point-max)))
+(defun infu-bionic-reading-region (Begin End)
+  "Bold the first few chars of every word in region.
+Version 2022-05-21"
+  (interactive "r")
+  (let (xBounds xWordBegin xWordEnd  )
+    (save-restriction
+      (narrow-to-region Begin End)
+      (goto-char (point-min))
+      (while (forward-word)
+        ;; bold the first half of the word to the left of cursor
+        (setq xBounds (bounds-of-thing-at-point 'word))
+        (setq xWordBegin (car xBounds))
+        (setq xWordEnd (cdr xBounds))
+        (setq xBoldEndPos (+ xWordBegin (1+ (/ (- xWordEnd xWordBegin) 2))))
+        (put-text-property xWordBegin xBoldEndPos
+                           'font-lock-face infu-bionic-reading-face)))))
+(provide 'infu-bionic-face)
+
+(defun xah-space-to-newline ()
+  "Replace space sequence to a newline char.
+Works on current block or selection.
+URL `http://xahlee.info/emacs/emacs/emacs_space_to_newline.html'
+Version 2017-08-19"
+  (interactive)
+  (let* ( $p1 $p2 )
+    (if (use-region-p)
+        (progn
+          (setq $p1 (region-beginning))
+          (setq $p2 (region-end)))
+      (save-excursion
+        (if (re-search-backward "\n[ \t]*\n" nil "move")
+            (progn (re-search-forward "\n[ \t]*\n")
+                   (setq $p1 (point)))
+          (setq $p1 (point)))
+        (re-search-forward "\n[ \t]*\n" nil "move")
+        (skip-chars-backward " \t\n" )
+        (setq $p2 (point))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region $p1 $p2)
+        (goto-char (point-min))
+        (while (re-search-forward " +" nil t)
+          (replace-match "\n" ))))))
+(provide 'xah-space-to-newline)
+
 
 ;;;;;;;;;;;;xahutils-end
+
+;; from Doom:
+(defun +evil/shift-right ()
+  "vnoremap < <gv"
+  (interactive)
+  (call-interactively #'evil-shift-right)
+  (evil-normal-state)
+  (evil-visual-restore))
+(defun +evil/shift-left ()
+  "vnoremap > >gv"
+  (interactive)
+  (call-interactively #'evil-shift-left)
+  (evil-normal-state)
+  (evil-visual-restore))
+(defun +evil/alt-paste ()
+  "Call `evil-paste-after' but invert `evil-kill-on-visual-paste'.
+By default, this replaces the selection with what's in the clipboard without
+replacing its contents."
+  (interactive)
+  (let ((evil-kill-on-visual-paste (not evil-kill-on-visual-paste)))
+    (call-interactively #'evil-paste-after)))
+( define-key evil-visual-state-map (kbd "<") '+evil/shift-left)
+( define-key evil-visual-state-map (kbd ">") '+evil/shift-right)
+( define-key evil-visual-state-map (kbd "gp") '+evil/alt-paste)
 
 ;; make sure dired buffers end in a slash so we can identify them easily
 ;; lifted from: https://iqss.github.io/IQSS.emacs/init.html#make_emacs_friendlier_to_newcomers
@@ -143,6 +207,7 @@ Version 2017-06-26"
           (lambda()
              (setq truncate-lines 1)))
 
+;;;;;;;;;;;;unused below:
 
 ;; Fantastically functioning but slow'ish
     ;; (defmacro infu/save-tab-excursion (&rest body)
@@ -154,23 +219,77 @@ Version 2017-06-26"
     ;; 	   (tab-bar-switch-to-recent-tab))))
     ;; (infu/save-tab-excursion
     ;;  (find-file "~/xinfu/todo.md"))
+ 
+;;; when using emacs remotely, this crashes connection
+;;         (use-package huecycle
+;;     ;; :diminish huecycle-mode
+;;     ; colour-flashing eye candy ;
+;;     :defer 5
+;;     ;; :init
+;;     :config
+;;     (huecycle-set-faces
+;; ;; ((background . hl-line)
+;; ((background . Infu-Red)
+;;     :random-color-hue-range (0.0 1.0)
+;;     :random-color-saturation-range (0.6 0.9)
+;;     :random-color-luminance-range (0.7 0.8)
+;;     :speed 1.5 )
+;; ((foreground . (doom-modeline-evil-normal-state
+;; 		doom-modeline-evil-insert-state
+;; 		doom-modeline-buffer-major-mode
+;; 		line-number-current-line
+;; 		doom-modeline-lsp-success
+;; 		doom-modeline-panel
+;; 		doom-modeline-info))
+;;     :random-color-hue-range (0.0 1.0)
+;;     :random-color-saturation-range (0.8 1.0)
+;;     :random-color-luminance-range (0.5 0.8))
+;; ;; ((background . auto-dim-other-buffers-face)
+;; ;;     :random-color-hue-range (0.0 1.0)
+;; ;;     :random-color-saturation-range (0.3 0.8)
+;; ;;     :random-color-luminance-range (0.1 0.2))
+;; ((foreground . warning)
+;;     :color-list ("#FF0000" "#FF0000" "#DDAAAA")
+;;     :next-color-func huecycle-get-next-list-color
+;;     :speed 5.0)
+;; ((foreground . region)
+;;     :random-color-hue-range (0.0 1.0)
+;;     :random-color-saturation-range (0.9 1.0)
+;;     :random-color-luminance-range (0.5 0.8)))
+;; (huecycle-when-idle 1.4))
 
-
-;; ----- TODO:
-;; - Check if possible to incorporate Strokes gestures ez,
-;; - Reorganise packages so they fit in logical order
-;; - integrate hs-minor-mode into this init file
-;; - https://www.youtube.com/watch?v=rvWbUGx9U5E&t=1s
-;; - 
-;; ----- Emacs new update gamechangers:
-;; https://github.com/emacs-mirror/emacs/blob/master/etc/NEWS.28
-;; 198 context-menu-mode
-;; 289 does it change xah package?
-;; 932 'copy-matching-lines' /  'kill-matching-lines'
-;; 988 - save-place-file / save-place-abbreviate-file-names
-;; 992 - copy-region-blink
-;; 2387 - thing-at-point
-;; 2437 - world-clock commands
-;; 2470 - python shell interpreter
-;; 3077 - removed functions
-
+;; 	(use-package recentf
+;;     :config
+;; (setq recentf-exclude '("/tmp/"
+;;                         "/ssh:"
+;;                         "/sudo:"
+;;                         "recentf$"
+;;                         "company-statistics-cache\\.el$"
+;;                         ;; ctags
+;;                         "/TAGS$"
+;;                         ;; global
+;;                         "/GTAGS$"
+;;                         "/GRAGS$"
+;;                         "/GPATH$"
+;;                         ;; binary
+;;                         "\\.mkv$"
+;;                         "\\.mp[34]$"
+;;                         "\\.el.gz$"
+;;                         "^/var/folders\\.*"
+;;                         "COMMIT_EDITMSG\\'"
+;;                         ".*-autoloads\\.el\\'"
+;;                         "[/\\]\\.elpa/"
+;;                         "\\.avi$"
+;;                         "\\.pdf$"
+;;                         "\\.docx?$"
+;;                         "\\.xlsx?$"
+;;                         ;; sub-titles
+;;                         "\\.sub$"
+;;                         "\\.srt$"
+;;                         "\\.ass$"
+;;                         ;; ~/.emacs.d/**/*.el included
+;;                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
+;;                         ))
+;; (add-to-list 'recentf-exclude no-littering-var-directory)
+;; (add-to-list 'recentf-exclude no-littering-etc-directory)
+;; (recentf-mode 1))

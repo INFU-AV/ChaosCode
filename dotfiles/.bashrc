@@ -1,91 +1,38 @@
 
 # https://infu.fyi/
 
-# Backup motd lmao
-# http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
-# nr1 from https://fsymbols.com/text-art/
-if [[ ! $SHLVL == 1 ]]  ; then cat <<END
+# Navigate Headers:
+##### EXPORTS & FUNCTIONS
+##### LOAD EMACS DAEMON
+##### TITLE ZONE
+##### BASH SPECIFIC
+##### PROMPTLINE dice-or-error-display!
+##### ALIASES
 
-.___ _______  _______________ ___  
-|   |\      \ \_   _____/    |   \ 
-|   |/   |   \ |    __) |    |   / 
-|   /    |    \|     \  |    |  /  
-|___\____|__  /\___  /  |______/   
-            \/     \/
+# If not running interactively, don't do anything
+case $- in
+   *i*) ;;
+     *) return;;
+esac
 
-END
-fi
-
-    # customised PS1 prompt via https://github.com/jmatth/ezprompt
-# Don't display error code if 0
-function nonzero_return() {
-	RETVAL=$?
-	[ $RETVAL -ne 0 ] && echo "-$RETVAL-"
-}
-export PS1="\[\e[35m\]\A\[\e[m\]\[\e[33;41m\]\`nonzero_return\`\[\e[m\] \w\[\e[32m\]\\$\[\e[m\]"
-
-# No backlashes in bash next to $locations:
-shopt -u progcomp
-# Custom location for .bash_history file:
-export HISTFILE=~/.termux/.bash_history
-# Don't to see .lesshst file at all:
-export LESSHISTFILE=/dev/null
-
-    # Aliases
-
-# Navigation
-alias cd.="cd .."
-alias cd..="cd .."
-alias ..="cd .."
-alias ...="cd ../.."
-# Easy quitting
-alias q="exit"
-alias Q="exit"
-alias kk="exit" #for other side lol
-# pkg shortcut heaven
-alias Pu="pkg update ; pkg clean ; pkg autoclean"
-alias Ps="pkg search"
-alias Pin="pkg install"
-alias Prm="pkg remove"
-alias Ph="cat $PREFIX/var/log/apt/history.log"
-alias Pli="pkg list-installed"
-alias Pla="pkg list-all"
-
-alias c="clear"
-
-    # Apps
-alias n="nano -m" #Mouse support
-alias ncdu="ncdu -q"
-# personalized neofetch
-alias Neo="neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off"
-
-# turn "ls" into "exa" for faster colourful usage
-alias ls="exa   -aF  --group-directories-first -s modified"
-alias lse="exa   -aF  --group-directories-first -s extension"
-alias lsr="exa  -aF  --group-directories-first -R"
-alias lst="exa  -aF  --group-directories-first -T --level=3"
-alias lso="exa  -aF1 --group-directories-first -s name"
-alias lsor="exa -aF1 --group-directories-first -R"
-alias lsot="exa -aF1 --group-directories-first -T --level=3"
+##### EXPORTS & FUNCTIONS
 
     # follow every "cd" command with "ls"
-function cd() {
+cd() {
     DIR="$*";   
 if [ $# -lt 1 ]; then
     DIR=$HOME;  # if no DIR given, go home
 fi;
 builtin cd "${DIR}" && \
     ls  # <- your preffered ls command
-} # mine is aliased to exa anyway lol
-    
-    # requires Termux:API
-alias send="termux-share -a send" # send your files around!
-alias clip="termux-clipboard-set" # use pipe before!
+} # it will also take aliases from above
+
+mkcd() { # Make folder and enter it
+NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
 
     # quick termux clipboard
-function cx() {
-  if [[ -n $* ]]
-then
+cx() {
+  if [[ -n $* ]]; then
     echo "$*" | termux-clipboard-set
     echo '[copied!]'
 else
@@ -96,10 +43,9 @@ fi
 }
 
     # ^ same, + backticks for Discord-code block!
-function cX() {
-if [[ -n $* ]]
-then
-    echo "\`\`\`$*\`\`\`" | termux-clipboard-set
+cX() {
+if [[ -n $* ]]; then
+    echo "\`\`\`\n$*\n\`\`\`" | termux-clipboard-set
     echo '[copied!]'
 else
     echo '[cX (+bonus backticks!) usage:"]'
@@ -108,17 +54,25 @@ else
 fi
 }
 
-    # my Emacs aliases
-alias e="emacs"
-alias E="emacs -l ~/.emacs.d/EdiredTerm.el"
-alias ep="emacs -f list-packages"
-alias ei="emacs --debug-init ~/.emacs.d/early-init.el ~/.emacs.d/init.el -f use-package-report -f split-window"
-alias et="emacs -l ~/.emacs.d/EnonEmpty.el"
-alias etq="emacs -l ~/.emacs.d/EnonEmpty.el ~/xinfu/QN.org ~/xinfu/todo.org"
-alias ec="emacs -NW"
+# personal phone locations I use often:
+exports() {
+export dl=~/storage/downloads
+export ex=~/storage/external-1
+export sc=~/xinfu/scripts/
+export piggy=~/storage/shared/PSP/GAME/Piggy
+export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save
+export gb=/storage/3439-6335/INFU/ARTS/GBcamera
+export psx=~/storage/shared/duckstation
+}
+# Only export those in first shell
+# and only on my android device
+# must be before I start Emacs server
+# otherwise I can't access those shortcuts
+[[ "$OSTYPE" == "linux-android" && $SHLVL == 1 ]] && exports
+export EDITOR="emacs"
 
-# QuickTars, as I never remmember syntax
-function tarhelp() {
+# QuickTars, as I never remember syntax
+tarhelp() {
 cat <<EOF
 =====HOW TO TAR=====
 EXAMPLE: tar czvf archive.tar.gz directory
@@ -134,47 +88,157 @@ EXAMPLE: tar czvf archive.tar.gz directory
 EOF
 }
 
-alias ip="ifconfig | grep inet"
+##### LOAD EMACS DAEMON
+# Check if daemon is on already
+if ! emacsclient -e 0 >&/dev/null
+then emacs -nw --no-x-resources --daemon &
+# else emacsclient -c "$@"
+fi
 
+##### TITLE ZONE
+# Backup motd lmao
+# http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
+# nr1 from https://fsymbols.com/text-art/
+  
+#  ██╗███╗░░██╗███████╗██╗░░░██╗
+#  ██║████╗░██║██╔════╝██║░░░██║
+#  ██║██╔██╗██║█████╗░░██║░░░██║
+#  ██║██║╚████║██╔══╝░░██║░░░██║
+#  ██║██║░╚███║██║░░░░░╚██████╔╝
+#  ╚═╝╚═╝░░╚══╝╚═╝░░░░░░╚═════╝░
+
+# .___ _______  _______________ ___  
+# |   |\      \ \_   _____/    |   \ 
+# |   |/   |   \ |    __) |    |   / 
+# |   /    |    \|     \  |    |  /  
+# |___\____|__  /\___  /  |______/   
+#             \/     \/
+
+# roll out banners bit by bit
+scanline() {
+   while (( "$#" )); do
+       printf '%b' "$1"
+       sleep 0.02
+       shift
+   done
+return
+}
+
+if [[ $SHLVL == 1 && -z "$INSIDE_EMACS" ]]; then
+scanline "\n" \
+         " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
+         " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
+         " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
+         " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
+         " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
+         " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n" "\n"
+else scanline "\n" \
+         ".___ _______  _______________ ___  \n" \
+         "|   |\      \ \_   _____/    |   \ \n" \
+         "|   |/   |   \ |    __) |    |   / \n" \
+         "|   /    |    \|     \  |    |  /  \n" \
+         "|___\____|__  /\___  /  |______/   \n" \
+         "            \/     \/              \n" "\n"
+fi
+# I removed original Termux banners with this:
+# rm $PREFIX/etc/motd*
+
+##### BASH SPECIFIC
+
+### Bash resources:
+# https://tldp.org/LDP/abs/html/
+
+# No backlashes in bash next to $locations:
+shopt -u progcomp
+# When changing directory small typos can be ignored by bash
+# for example, cd /vr/lgo/apaache would find /var/log/apache
+shopt -s cdable_vars
+shopt -s cdspell
+shopt -s dirspell
+# Custom location/settings for .bash_history file:
+export HISTFILE=~/.config/.bash_history
+# amount of commands stored in bash memory at once
+export HISTSIZE=50
+# and here's how many are stored in history file!
+export HISTFILESIZE=2000
+# append to the history file, don't overwrite it
+shopt -s histappend
+# ignore those exact matches:
+export HISTIGNORE="&:bg:fg:ls"
+# don't put duplicate lines in the history
+# AND ignore lines starting with space
+HISTCONTROL=ignoreboth
+# Don't wanna see .lesshst file at all
+export LESSHISTFILE=/dev/null
+
+# use TAB/S-TAB to cycle through files
+bind TAB:menu-complete
+bind '"\e[Z":menu-complete-backward'
+# show candidates before cycling
+bind "set show-all-if-ambiguous on"
+bind "set menu-complete-display-prefix on"
+
+##### PROMPTLINE dice-or-error-display!
+ # if no error: 
+  # display random 0-9 number (decorative)
+ # if error:
+  # display errorcode until successful command
+# initial prompt + error checking idea:
+# https://github.com/jmatth/ezprompt
+
+dice-or-error-prompt() {
+local RETVAL=$?
+local SoDice=$((RANDOM % 10))
+if ((RETVAL)); then
+PS1="\[\e[35m\]\A\[\e[m\]\w\[\e[33;41m\]-$RETVAL-\[\e[m\]"
+else
+PS1="\[\e[35m\]\A\[\e[m\]\w\[\e[36m\][\[\e[m\]$SoDice\[\e[36m\]]\[\e[m\]"
+fi
+}
+### Explanation:
+## RETVAL preserves error code
+# because "Dice roll" counts as action
+# and it's gonna end in success
+## 2 different PS1 to prevent glitching
+PROMPT_COMMAND="dice-or-error-prompt"
+
+PS2='» '
+
+# Good show-off prompt with clock in top-right
+# https://tldp.org/HOWTO/Bash-Prompt-HOWTO/clockt.html
+
+##### ALIASES:
+
+if [ -f ~/.config/aliases.sh ]; then
+chmod +x ~/.config/aliases.sh
+source ~/.config/aliases.sh
+else echo "No aliases to load!"
+fi
+
+# -ALIAS_END #
+
+# since we got spare time till Emacs turns on..
 #Flashy intro sequence lmao
-RED='\033[1;31m'
-NC='\033[0m' # NoColor
-YW='\033[1;33m'
-echo -e -n "${YW}=====${RED}[INFU_HAS_LOGGED_IN]${YW}=====${NC}"
-echo 
-Neo
-dice() {
-throw=$(( $RANDOM % 10 ))
-}
-dice #initiate random number
-echo -e "${YW}=====The Lucky Number:${NC}[${RED}"$throw"${NC}]${YW}=====${NC}"
-
-function swap() {
-bash ~/.termux/swap.sh ; termux-reload-settings
-} 
-
-# personal phone locations I use often:
-    exports() {
-export dl=~/storage/downloads
-export ex=~/storage/external-1
-export sc=~/xinfu/scripts/
-export piggy=~/storage/shared/PSP/GAME/Piggy
-export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save
-export gb=/storage/3439-6335/INFU/ARTS/GBcamera
-export -f cx
-export -f cX
-export -f tarhelp
-export -f swap
-export EDITOR="emacs"
-}
-# Only export those in first shell
-[[ $SHLVL == 1 ]] && exports
+FlashyIntro() {
+local RE='\033[0;31m' # REd
+local NC='\033[0m'    # NoColor
+local GR='\033[1;32m' # GReen
+local YW='\033[5;33m' # YelloW
+local CA='\033[1;36m' # CyAn
+echo -e -n "${YW}=====${RE}[INFU_LEVEL:${NC}${SHLVL}${RE}]${YW}=====${NC}"
+echo
+echo
+echo -e -n "${GR}HOME folder status${NC}: " ; if [[ $(ls $HOME | wc -l) -gt 20 ]]; then printf "🚫" ; fi ; printf "✨\n"
+echo -e -n "${GR}Emacs packages${NC}: $(grep -c 'use-package' ~/.emacs.d/init.el)"
+echo
+echo -e -n "${GR}Sober${NC}: $(( ($(date +%s) - $(date +%s -ud '2022-11-13 00:00:00'))/3600/24)) days"
+neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off
+echo -e "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}=====${NC}"
+}; FlashyIntro
 
 # Loop to start-up Emacs
 # but not while inside Emacs!
-if [[ -z "$INSIDE_EMACS" ]]
-then
-    emacs -l ~/.emacs.d/EdiredTerm.el
-else
-unalias e # to prevent accidental recursive hell
+if [[ -z "$INSIDE_EMACS" ]]; then
+emacsclient -t
+else echo "Already inside Emacs!"
 fi
