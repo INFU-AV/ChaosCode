@@ -1,4 +1,4 @@
-
+#!/usr/bin/env bash
 # https://infu.fyi/
 
 # Navigate Headers:
@@ -11,8 +11,8 @@
 
 # If not running interactively, don't do anything
 case $- in
-   *i*) ;;
-     *) return;;
+    *i*) ;;
+      *) return;;
 esac
 
 ##### EXPORTS & FUNCTIONS
@@ -23,8 +23,7 @@ cd() {
 if [ $# -lt 1 ]; then
     DIR=$HOME;  # if no DIR given, go home
 fi;
-builtin cd "${DIR}" && \
-    ls  # <- your preffered ls command
+builtin cd "${DIR}" && ls # <- your preferred ls command
 } # it will also take aliases from above
 
 mkcd() { # Make folder and enter it
@@ -42,8 +41,7 @@ cd "$1" || { printf '%b\n' \
     return 1; } # return an error
 }
 
-    # quick termux clipboard
-cx() {
+cx() { # quick termux clipboard
   if [[ -n $* ]]; then
     echo "$*" | termux-clipboard-set
     echo '[copied!]'
@@ -54,8 +52,7 @@ else
 fi
 }
 
-    # ^ same, + backticks for Discord-code block!
-cX() {
+cX() { # same as function above, with backticks for Discord codeblock
 if [[ -n $* ]]; then
     echo "\`\`\`\n$*\n\`\`\`" | termux-clipboard-set
     echo '[copied!]'
@@ -66,15 +63,14 @@ else
 fi
 }
 
-# personal phone locations I use often:
-exports() {
-export dl=~/storage/downloads
-export ex=~/storage/external-1
-export sc=~/xinfu/scripts/
-export piggy=~/storage/shared/PSP/GAME/Piggy
-export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save
-export gb=/storage/3439-6335/INFU/ARTS/GBcamera
-export psx=~/storage/shared/duckstation
+exports() { # personal phone locations I use often:
+export dl="$HOME/storage/downloads"
+export ex="$HOME/storage/external-1"
+export sc="$HOME/xinfu/scripts/"
+export piggy="$HOME/storage/shared/PSP/GAME/Piggy"
+export za="/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save"
+export gb="/storage/3439-6335/INFU/ARTS/GBcamera"
+export psx="$HOME/storage/shared/duckstation"
 }
 # Only export those in first shell
 # and only on my android device
@@ -102,8 +98,8 @@ EOF
 
 ##### LOAD EMACS DAEMON
 # Check if daemon is on already
-if ! emacsclient -e 0 >&/dev/null
-then emacs -nw --no-x-resources --daemon &
+if ! emacsclient -e 0 >&/dev/null; then
+    emacs -nw --no-x-resources --daemon &
 # else emacsclient -c "$@"
 fi
 
@@ -111,7 +107,7 @@ fi
 # Backup motd lmao
 # http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
 # nr1 from https://fsymbols.com/text-art/
-  
+
 #  ██╗███╗░░██╗███████╗██╗░░░██╗
 #  ██║████╗░██║██╔════╝██║░░░██║
 #  ██║██╔██╗██║█████╗░░██║░░░██║
@@ -119,15 +115,14 @@ fi
 #  ██║██║░╚███║██║░░░░░╚██████╔╝
 #  ╚═╝╚═╝░░╚══╝╚═╝░░░░░░╚═════╝░
 
-# .___ _______  _______________ ___  
-# |   |\      \ \_   _____/    |   \ 
-# |   |/   |   \ |    __) |    |   / 
-# |   /    |    \|     \  |    |  /  
-# |___\____|__  /\___  /  |______/   
+# .___ _______  _______________ ___
+# |   |\      \ \_   _____/    |   \
+# |   |/   |   \ |    __) |    |   /
+# |   /    |    \|     \  |    |  /
+# |___\____|__  /\___  /  |______/
 #             \/     \/
 
-# roll out banners bit by bit
-scanline() {
+scanline() { # roll out banners bit by bit
    while (( "$#" )); do
        printf '%b' "$1"
        sleep 0.02
@@ -137,20 +132,21 @@ return
 }
 
 if [[ $SHLVL == 1 && -z "$INSIDE_EMACS" ]]; then
-scanline "\n" \
-         " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
-         " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
-         " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
-         " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
-         " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
-         " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n" "\n"
-else scanline "\n" \
-         ".___ _______  _______________ ___  \n" \
-         "|   |\      \ \_   _____/    |   \ \n" \
-         "|   |/   |   \ |    __) |    |   / \n" \
-         "|   /    |    \|     \  |    |  /  \n" \
-         "|___\____|__  /\___  /  |______/   \n" \
-         "            \/     \/              \n" "\n"
+    scanline "\n" \
+    " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
+    " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
+    " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
+    " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
+    " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
+    " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n\n"
+else
+    scanline "\n" \
+    ".___ _______  _______________ ___  \n" \
+    "|   |\      \ \_   _____/    |   \ \n" \
+    "|   |/   |   \ |    __) |    |   / \n" \
+    "|   /    |    \|     \  |    |  /  \n" \
+    "|___\____|__  /\___  /  |______/   \n" \
+    "            \/     \/              \n\n"
 fi
 # I removed original Termux banners with this:
 # rm $PREFIX/etc/motd*
@@ -163,12 +159,12 @@ fi
 # No backlashes in bash next to $locations:
 shopt -u progcomp
 # When changing directory small typos can be ignored by bash
-# for example, cd /vr/lgo/apaache would find /var/log/apache
+# for example, cd /vr/lgo/apache would find /var/log/apache
 shopt -s cdable_vars
 shopt -s cdspell
 shopt -s dirspell
 # Custom location/settings for .bash_history file:
-export HISTFILE=~/.config/.bash_history
+export HISTFILE=$HOME/.config/.bash_history
 # amount of commands stored in bash memory at once
 export HISTSIZE=50
 # and here's how many are stored in history file!
@@ -179,9 +175,9 @@ shopt -s histappend
 export HISTIGNORE="&:bg:fg:ls"
 # don't put duplicate lines in the history
 # AND ignore lines starting with space
-HISTCONTROL=ignoreboth
+export HISTCONTROL=ignoreboth
 # Don't wanna see .lesshst file at all
-export LESSHISTFILE=/dev/null
+export LESSHISTFILE="/dev/null"
 
 # use TAB/S-TAB to cycle through files
 bind TAB:menu-complete
@@ -191,16 +187,16 @@ bind "set show-all-if-ambiguous on"
 bind "set menu-complete-display-prefix on"
 
 ##### PROMPTLINE dice-or-error-display!
- # if no error: 
+ # if no error:
   # display random 0-9 number (decorative)
  # if error:
-  # display errorcode until successful command
+  # display error code until successful command
 # initial prompt + error checking idea:
 # https://github.com/jmatth/ezprompt
 
 dice-or-error-prompt() {
-local RETVAL=$?
-local SoDice=$((RANDOM % 10))
+local RETVAL="$?"
+local SoDice="$((RANDOM % 10))"
 if ((RETVAL)); then
 PS1="\[\e[35m\]\A\[\e[m\]\w\[\e[33;41m\]-$RETVAL-\[\e[m\]"
 else
@@ -221,10 +217,11 @@ PS2='» '
 
 ##### ALIASES:
 
-if [ -f ~/.config/aliases.sh ]; then
-chmod +x ~/.config/aliases.sh
-source ~/.config/aliases.sh
-else echo "No aliases to load!"
+if [ -f "$HOME/.config/aliases.sh" ]; then
+    chmod +x "$HOME/.config/aliases.sh"
+    source "$HOME/.config/aliases.sh"
+else
+    echo "No aliases to load!"
 fi
 
 # -ALIAS_END #
@@ -251,6 +248,7 @@ echo -e "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}====
 # Loop to start-up Emacs
 # but not while inside Emacs!
 if [[ -z "$INSIDE_EMACS" ]]; then
-emacsclient -t
-else echo "Already inside Emacs!"
+    emacsclient -t
+else
+    echo "Already inside Emacs!"
 fi
