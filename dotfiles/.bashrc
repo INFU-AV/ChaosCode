@@ -17,13 +17,12 @@ esac
 
 ##### EXPORTS & FUNCTIONS
 
-    # follow every "cd" command with "ls"
-cd() {
-    DIR="$*";   
-if [ $# -lt 1 ]; then
-    DIR=$HOME;  # if no DIR given, go home
-fi;
-builtin cd "${DIR}" && ls # <- your preferred ls command
+cd() { # follow every "cd" command with "ls"
+    local DIR="$*"
+    if [[ ! "$#" ]]; then
+        DIR=$HOME; # if no DIR given, go home
+    fi;
+    builtin cd "${DIR}" && ls # <- your preferred ls command
 } # it will also take aliases from above
 
 mkcd() { # Make folder and enter it
@@ -42,24 +41,24 @@ cd "$1" || { printf '%b\n' \
 }
 
 cx() { # quick termux clipboard
-  if [[ -n $* ]]; then
-    echo "$*" | termux-clipboard-set
-    echo '[copied!]'
-else
-    echo '[cx usage:"]'
-    echo '[cx (string you want to copy)]'
-    echo '[AVOID BACKLASHES!]'
-fi
+    if [[ -n "$*" ]]; then
+        echo -e "${*//\\/\\\\}" | termux-clipboard-set
+        echo '[copied!]'
+    else
+        printf '%b' \
+        '[cx usage:"]' \
+        '[cx (string you want to copy)]'
+    fi
 }
 
 cX() { # same as function above, with backticks for Discord codeblock
-if [[ -n $* ]]; then
-    echo "\`\`\`\n$*\n\`\`\`" | termux-clipboard-set
+if [[ -n "$*" ]]; then
+    echo -e "\`\`\`\n${*//\\/\\\\}\n\`\`\`" | termux-clipboard-set
     echo '[copied!]'
 else
-    echo '[cX (+bonus backticks!) usage:"]'
-    echo '[cX (string you want to copy)]'
-    echo '[AVOID BACKLASHES!]'
+    printf '%b' \
+    '[cX (+bonus backticks!) usage:"]' \
+    '[cX (string you want to copy)]'
 fi
 }
 
