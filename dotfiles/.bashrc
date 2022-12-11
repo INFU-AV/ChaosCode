@@ -229,20 +229,21 @@ fi
 # since we got spare time till Emacs turns on..
 #Flashy intro sequence lmao
 FlashyIntro() {
-local RE='\033[0;31m' # REd
-local NC='\033[0m'    # NoColor
-local GR='\033[1;32m' # GReen
-local YW='\033[5;33m' # YelloW
-local CA='\033[1;36m' # CyAn
-echo -e -n "${YW}=====${RE}[INFU_LEVEL:${NC}${SHLVL}${RE}]${YW}=====${NC}"
-echo
-echo
-echo -e -n "${GR}HOME folder status${NC}: " ; if [[ $(ls $HOME | wc -l) -gt 20 ]]; then printf "🚫" ; fi ; printf "✨\n"
-echo -e -n "${GR}Emacs packages${NC}: $(grep -c 'use-package' ~/.emacs.d/init.el)"
-echo
-echo -e -n "${GR}Sober${NC}: $(( ($(date +%s) - $(date +%s -ud '2022-11-13 00:00:00'))/3600/24)) days"
-neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off
-echo -e "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}=====${NC}"
+local RE='\e[0;31m' # REd
+local NC='\e[0m'    # NoColor
+local GR='\e[1;32m' # GReen
+local YW='\e[5;33m' # YelloW
+local CA='\e[1;36m' # CyAn
+printf '%b' \
+    "${YW}=====${RE}[INFU_LEVEL:${NC}${SHLVL}${RE}]${YW}=====${NC}" "\n" \
+    "\n" \
+    "\n" \
+    "${GR}HOME folder status${NC}: $( if [[ $(ls $HOME | wc -l) -gt 20 ]]; then printf "🚫" ; else printf "✨\n" ; fi )" "\n" \
+    "${GR}Emacs packages${NC}: $(grep -c 'use-package' $HOME/.emacs.d/init.el)" "\n" \
+    "\n" \
+    "${GR}Sober${NC}: $(( ( EPOCHSECONDS - $(date +%s -ud '2022-11-13 00:00:00') ) /3600/24 )) days" "\n" \
+    "$(neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off)" "\n" \
+    "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}=====${NC}" "\n"
 }; FlashyIntro
 
 # Loop to start-up Emacs
