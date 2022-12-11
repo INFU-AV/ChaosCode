@@ -158,7 +158,7 @@ fi
 # No backlashes in bash next to $locations:
 shopt -u progcomp
 # When changing directory small typos can be ignored by bash
-# for example, cd /vr/lgo/apache would find /var/log/apache
+# for example, cd /vr/lgo/apaache would find /var/log/apache
 shopt -s cdable_vars
 shopt -s cdspell
 shopt -s dirspell
