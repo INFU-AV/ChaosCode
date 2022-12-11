@@ -1,4 +1,4 @@
-
+#!/usr/bin/env bash
 # https://infu.fyi/
 
 # Navigate Headers:
@@ -11,58 +11,65 @@
 
 # If not running interactively, don't do anything
 case $- in
-   *i*) ;;
-     *) return;;
+    *i*) ;;
+      *) return;;
 esac
 
 ##### EXPORTS & FUNCTIONS
 
-    # follow every "cd" command with "ls"
-cd() {
-    DIR="$*";   
-if [ $# -lt 1 ]; then
-    DIR=$HOME;  # if no DIR given, go home
-fi;
-builtin cd "${DIR}" && \
-    ls  # <- your preffered ls command
+cd() { # follow every "cd" command with "ls"
+    local DIR="$*"
+    if [[ ! "$#" ]]; then
+        DIR=$HOME; # if no DIR given, go home
+    fi;
+    builtin cd "${DIR}" && ls # <- your preferred ls command
 } # it will also take aliases from above
 
 mkcd() { # Make folder and enter it
-NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
+mkdir -p "$1" || echo "Error: Could not create directory, check permissions"; return 1 # If we can't create the directory, return an error
+cd "$1" || { printf '%b\n' \
+    "Error: Created directory, but could not enter it." \
+    "How would you like to proceed?" \
+    "" \
+    "[K]eep directory (default) / [R]emove directory"
+    local cd_fail
+        while read -rn 1 cd_fail; do # If the `cd` fails for whatever reason, prompt the user whether to keep the directory
+            [[ $cd_fail =~ ^[\sKk]?$ ]] && break # On whitespace, no input or [Kk], keep the directory
+            [[ $cd_fail =~ ^[Rr]$ ]] && rm -I "$1"; break # On [Rr] remove the directory, prompt the user if its not empty.
+        done
+    return 1; } # return an error
+}
 
-    # quick termux clipboard
-cx() {
-  if [[ -n $* ]]; then
-    echo "$*" | termux-clipboard-set
+cx() { # quick termux clipboard
+    if [[ -n "$*" ]]; then
+        echo -e "${*//\\/\\\\}" | termux-clipboard-set
+        echo '[copied!]'
+    else
+        printf '%b' \
+        '[cx usage:"]' \
+        '[cx (string you want to copy)]'
+    fi
+}
+
+cX() { # same as function above, with backticks for Discord codeblock
+if [[ -n "$*" ]]; then
+    echo -e "\`\`\`\n${*//\\/\\\\}\n\`\`\`" | termux-clipboard-set
     echo '[copied!]'
 else
-    echo '[cx usage:"]'
-    echo '[cx (string you want to copy)]'
-    echo '[AVOID BACKLASHES!]'
+    printf '%b' \
+    '[cX (+bonus backticks!) usage:"]' \
+    '[cX (string you want to copy)]'
 fi
 }
 
-    # ^ same, + backticks for Discord-code block!
-cX() {
-if [[ -n $* ]]; then
-    echo "\`\`\`\n$*\n\`\`\`" | termux-clipboard-set
-    echo '[copied!]'
-else
-    echo '[cX (+bonus backticks!) usage:"]'
-    echo '[cX (string you want to copy)]'
-    echo '[AVOID BACKLASHES!]'
-fi
-}
-
-# personal phone locations I use often:
-exports() {
-export dl=~/storage/downloads
-export ex=~/storage/external-1
-export sc=~/xinfu/scripts/
-export piggy=~/storage/shared/PSP/GAME/Piggy
-export za=/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save
-export gb=/storage/3439-6335/INFU/ARTS/GBcamera
-export psx=~/storage/shared/duckstation
+exports() { # personal phone locations I use often:
+export dl="$HOME/storage/downloads"
+export ex="$HOME/storage/external-1"
+export sc="$HOME/xinfu/scripts/"
+export piggy="$HOME/storage/shared/PSP/GAME/Piggy"
+export za="/storage/emulated/0/Android/data/it.dbtecno.pizzaboypro/files/pizzaboy/save"
+export gb="/storage/3439-6335/INFU/ARTS/GBcamera"
+export psx="$HOME/storage/shared/duckstation"
 }
 # Only export those in first shell
 # and only on my android device
@@ -90,8 +97,8 @@ EOF
 
 ##### LOAD EMACS DAEMON
 # Check if daemon is on already
-if ! emacsclient -e 0 >&/dev/null
-then emacs -nw --no-x-resources --daemon &
+if ! emacsclient -e 0 >&/dev/null; then
+    emacs -nw --no-x-resources --daemon &
 # else emacsclient -c "$@"
 fi
 
@@ -99,7 +106,7 @@ fi
 # Backup motd lmao
 # http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
 # nr1 from https://fsymbols.com/text-art/
-  
+
 #  ██╗███╗░░██╗███████╗██╗░░░██╗
 #  ██║████╗░██║██╔════╝██║░░░██║
 #  ██║██╔██╗██║█████╗░░██║░░░██║
@@ -107,15 +114,14 @@ fi
 #  ██║██║░╚███║██║░░░░░╚██████╔╝
 #  ╚═╝╚═╝░░╚══╝╚═╝░░░░░░╚═════╝░
 
-# .___ _______  _______________ ___  
-# |   |\      \ \_   _____/    |   \ 
-# |   |/   |   \ |    __) |    |   / 
-# |   /    |    \|     \  |    |  /  
-# |___\____|__  /\___  /  |______/   
+# .___ _______  _______________ ___
+# |   |\      \ \_   _____/    |   \
+# |   |/   |   \ |    __) |    |   /
+# |   /    |    \|     \  |    |  /
+# |___\____|__  /\___  /  |______/
 #             \/     \/
 
-# roll out banners bit by bit
-scanline() {
+scanline() { # roll out banners bit by bit
    while (( "$#" )); do
        printf '%b' "$1"
        sleep 0.02
@@ -125,20 +131,21 @@ return
 }
 
 if [[ $SHLVL == 1 && -z "$INSIDE_EMACS" ]]; then
-scanline "\n" \
-         " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
-         " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
-         " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
-         " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
-         " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
-         " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n" "\n"
-else scanline "\n" \
-         ".___ _______  _______________ ___  \n" \
-         "|   |\      \ \_   _____/    |   \ \n" \
-         "|   |/   |   \ |    __) |    |   / \n" \
-         "|   /    |    \|     \  |    |  /  \n" \
-         "|___\____|__  /\___  /  |______/   \n" \
-         "            \/     \/              \n" "\n"
+    scanline "\n" \
+    " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
+    " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
+    " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
+    " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
+    " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
+    " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n\n"
+else
+    scanline "\n" \
+    ".___ _______  _______________ ___  \n" \
+    "|   |\      \ \_   _____/    |   \ \n" \
+    "|   |/   |   \ |    __) |    |   / \n" \
+    "|   /    |    \|     \  |    |  /  \n" \
+    "|___\____|__  /\___  /  |______/   \n" \
+    "            \/     \/              \n\n"
 fi
 # I removed original Termux banners with this:
 # rm $PREFIX/etc/motd*
@@ -156,7 +163,7 @@ shopt -s cdable_vars
 shopt -s cdspell
 shopt -s dirspell
 # Custom location/settings for .bash_history file:
-export HISTFILE=~/.config/.bash_history
+export HISTFILE=$HOME/.config/.bash_history
 # amount of commands stored in bash memory at once
 export HISTSIZE=50
 # and here's how many are stored in history file!
@@ -167,9 +174,9 @@ shopt -s histappend
 export HISTIGNORE="&:bg:fg:ls"
 # don't put duplicate lines in the history
 # AND ignore lines starting with space
-HISTCONTROL=ignoreboth
+export HISTCONTROL=ignoreboth
 # Don't wanna see .lesshst file at all
-export LESSHISTFILE=/dev/null
+export LESSHISTFILE="/dev/null"
 
 # use TAB/S-TAB to cycle through files
 bind TAB:menu-complete
@@ -179,16 +186,16 @@ bind "set show-all-if-ambiguous on"
 bind "set menu-complete-display-prefix on"
 
 ##### PROMPTLINE dice-or-error-display!
- # if no error: 
+ # if no error:
   # display random 0-9 number (decorative)
  # if error:
-  # display errorcode until successful command
+  # display error code until successful command
 # initial prompt + error checking idea:
 # https://github.com/jmatth/ezprompt
 
 dice-or-error-prompt() {
-local RETVAL=$?
-local SoDice=$((RANDOM % 10))
+local RETVAL="$?"
+local SoDice="$((RANDOM % 10))"
 if ((RETVAL)); then
 PS1="\[\e[35m\]\A\[\e[m\]\w\[\e[33;41m\]-$RETVAL-\[\e[m\]"
 else
@@ -209,10 +216,11 @@ PS2='» '
 
 ##### ALIASES:
 
-if [ -f ~/.config/aliases.sh ]; then
-chmod +x ~/.config/aliases.sh
-source ~/.config/aliases.sh
-else echo "No aliases to load!"
+if [ -f "$HOME/.config/aliases.sh" ]; then
+    chmod +x "$HOME/.config/aliases.sh"
+    source "$HOME/.config/aliases.sh"
+else
+    echo "No aliases to load!"
 fi
 
 # -ALIAS_END #
@@ -220,11 +228,11 @@ fi
 # since we got spare time till Emacs turns on..
 #Flashy intro sequence lmao
 FlashyIntro() {
-local RE='\033[0;31m' # REd
-local NC='\033[0m'    # NoColor
-local GR='\033[1;32m' # GReen
-local YW='\033[5;33m' # YelloW
-local CA='\033[1;36m' # CyAn
+local RE='\e[0;31m' # REd
+local NC='\e[0m'    # NoColor
+local GR='\e[1;32m' # GReen
+local YW='\e[5;33m' # YelloW
+local CA='\e[1;36m' # CyAn
 echo -e -n "${YW}=====${RE}[INFU_LEVEL:${NC}${SHLVL}${RE}]${YW}=====${NC}"
 echo
 echo
@@ -239,6 +247,7 @@ echo -e "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}====
 # Loop to start-up Emacs
 # but not while inside Emacs!
 if [[ -z "$INSIDE_EMACS" ]]; then
-emacsclient -t
-else echo "Already inside Emacs!"
+    emacsclient -t
+else
+    echo "Already inside Emacs!"
 fi
