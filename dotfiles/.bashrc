@@ -2,12 +2,12 @@
 # https://infu.fyi/
 
 # Navigate Headers:
+##### ALIASES
 ##### EXPORTS & FUNCTIONS
 ##### LOAD EMACS DAEMON
 ##### TITLE ZONE
 ##### BASH SPECIFIC
 ##### PROMPTLINE dice-or-error-display!
-##### ALIASES
 
 # If not running interactively, don't do anything
 case $- in
@@ -15,13 +15,24 @@ case $- in
       *) return;;
 esac
 
+##### ALIASES
+
+if [ -f "$HOME/.config/aliases.sh" ]; then
+    chmod +x "$HOME/.config/aliases.sh"
+    source "$HOME/.config/aliases.sh"
+else
+    echo "No aliases to load!"
+fi
+
+# -ALIAS_END #
+
 ##### EXPORTS & FUNCTIONS
 
 cd() { # follow every "cd" command with "ls"
     local DIR="$*"
-    if [[ ! "$#" ]]; then
+    if (( ! "$#" )); then
         DIR=$HOME; # if no DIR given, go home
-    fi;
+    fi
     builtin cd "${DIR}" && ls # <- your preferred ls command
 } # it will also take aliases from above
 
@@ -35,7 +46,7 @@ cx() { # quick termux clipboard
     else
         printf '%b' \
         '[cx usage:"]' \
-        '[cx (string you want to copy)]'
+        '\n[cx (string you want to copy)]\n'
     fi
 }
 
@@ -46,7 +57,7 @@ if [[ -n "$*" ]]; then
 else
     printf '%b' \
     '[cX (+bonus backticks!) usage:"]' \
-    '[cX (string you want to copy)]'
+    '\n[cX (string you want to copy)]\n'
 fi
 }
 
@@ -201,17 +212,6 @@ PS2='» '
 
 # Good show-off prompt with clock in top-right
 # https://tldp.org/HOWTO/Bash-Prompt-HOWTO/clockt.html
-
-##### ALIASES:
-
-if [ -f "$HOME/.config/aliases.sh" ]; then
-    chmod +x "$HOME/.config/aliases.sh"
-    source "$HOME/.config/aliases.sh"
-else
-    echo "No aliases to load!"
-fi
-
-# -ALIAS_END #
 
 # since we got spare time till Emacs turns on..
 #Flashy intro sequence lmao
