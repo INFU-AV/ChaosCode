@@ -20,6 +20,8 @@ you want to sort out!
 See end of the script to see which extensions
 get sorted to which folders:
 feel free to add your own!
+Thanks for help from:
+fghsgh, NyaNyaCutie
 ===== INFU =====
 EOM
 }
