@@ -6,3 +6,5 @@ puts together images into full grid;
 batch-converts WAV audio files into ones with a 16-bit;
 ### vid2mp4.sh
 converts video to super-compatible mp4 file;
+### dlSorter.sh
+sorts your "Downloads" folder;
