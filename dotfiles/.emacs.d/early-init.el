@@ -21,7 +21,7 @@
 (menu-bar-mode -1)          ; Disable the menu bar
 
 (modify-all-frames-parameters '((width . 80)
-                            (height . 50)
+                            (height . 35)
                             (left . 0)
                             (right . 0)
                             (internal-border-width . 1)))
@@ -34,14 +34,12 @@
    (convert-standard-filename
       (expand-file-name  "var/eln-cache/" user-emacs-directory))))
 
-;; (defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'yes-or-no-p 'y-or-n-p)
 (setq use-short-answers t)
 
 ;; GUI transparency
-;; (set-frame-parameter (selected-frame) 'alpha '(90 . 40))
-;; (add-to-list 'default-frame-alist '(alpha . (90 . 40)))
-
-    ;; (setq idle-update-delay 1.0)  
+(set-frame-parameter (selected-frame) 'alpha '(90 . 40))
+(add-to-list 'default-frame-alist '(alpha . (90 . 40)))
 
 ;; (setq package-enable-at-startup nil)
 ;; (blink-cursor-mode nil)

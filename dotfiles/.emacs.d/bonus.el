@@ -35,34 +35,6 @@ Version 2016-10-25"
 		(comment-or-uncomment-region $lbp $lep)
 		    (forward-line )))))))
 
-(defun xah-copy-file-path (&optional DirPathOnlyQ)
-  "Copy current buffer file path or dired path.
-Result is full path.
-If `universal-argument' is called first, copy only the dir path.
-If in dired, copy the current or marked files.
-If a buffer is not file and not dired, copy value of `default-directory'.
-URL `http://xahlee.info/emacs/emacs/emacs_copy_file_path.html'
-Version 2018-06-18 2021-09-30"
-  (interactive "P")
-  (let (($fpath
-         (if (string-equal major-mode 'dired-mode)
-             (progn
-               (let (($result (mapconcat 'identity (dired-get-marked-files) "\n")))
-                 (if (equal (length $result) 0)
-                     (progn default-directory )
-                   (progn $result))))
-           (if (buffer-file-name)
-               (buffer-file-name)
-             (expand-file-name default-directory)))))
-    (kill-new
-     (if DirPathOnlyQ
-         (progn
-           (message "Directory copied: %s" (file-name-directory $fpath))
-           (file-name-directory $fpath))
-       (progn
-         (message "File path copied: %s" $fpath)
-         $fpath )))))
-
 (defun xah-dired-sort ()
   "Sort dired dir listing in different ways.
 Prompt for a choice.
@@ -168,7 +140,6 @@ Version 2017-08-19"
           (replace-match "\n" ))))))
 (provide 'xah-space-to-newline)
 
-
 ;;;;;;;;;;;;xahutils-end
 
 ;; from Doom:
@@ -257,39 +228,3 @@ replacing its contents."
 ;;     :random-color-saturation-range (0.9 1.0)
 ;;     :random-color-luminance-range (0.5 0.8)))
 ;; (huecycle-when-idle 1.4))
-
-;; 	(use-package recentf
-;;     :config
-;; (setq recentf-exclude '("/tmp/"
-;;                         "/ssh:"
-;;                         "/sudo:"
-;;                         "recentf$"
-;;                         "company-statistics-cache\\.el$"
-;;                         ;; ctags
-;;                         "/TAGS$"
-;;                         ;; global
-;;                         "/GTAGS$"
-;;                         "/GRAGS$"
-;;                         "/GPATH$"
-;;                         ;; binary
-;;                         "\\.mkv$"
-;;                         "\\.mp[34]$"
-;;                         "\\.el.gz$"
-;;                         "^/var/folders\\.*"
-;;                         "COMMIT_EDITMSG\\'"
-;;                         ".*-autoloads\\.el\\'"
-;;                         "[/\\]\\.elpa/"
-;;                         "\\.avi$"
-;;                         "\\.pdf$"
-;;                         "\\.docx?$"
-;;                         "\\.xlsx?$"
-;;                         ;; sub-titles
-;;                         "\\.sub$"
-;;                         "\\.srt$"
-;;                         "\\.ass$"
-;;                         ;; ~/.emacs.d/**/*.el included
-;;                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
-;;                         ))
-;; (add-to-list 'recentf-exclude no-littering-var-directory)
-;; (add-to-list 'recentf-exclude no-littering-etc-directory)
-;; (recentf-mode 1))

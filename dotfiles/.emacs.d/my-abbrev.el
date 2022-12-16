@@ -17,7 +17,7 @@
     ("ur" "you are" )
     ("btw" "by the way" )
     
-    ("chi" "chiptune" )
+    ("chi" "Chiptune" )
     ("mu" "musicians" )
     ("sou" "soundchip" )
     ("rese" "research" )
@@ -32,6 +32,12 @@
 )
 ")
     (":d" ":disabled")
+
+    ("Mstd" "Mastodon")
+    ("Twt" "Twitter")
+    ("Fb" "Facebook")
+    ("Dsd" "Discord")
+
 
     ("cnt" "can't" )
     ("ddnt" "didn't" )
@@ -89,10 +95,7 @@
     ("5=" "-----" )
     ("5-" "-----" )
     ("ra" "→" )
-    ;; url
-    ("urlemacs" "http://ergoemacs.org/" )
-
-    ;;
+    
     ))
 
 ;; define abbrev for specific major mode

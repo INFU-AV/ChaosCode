@@ -39,6 +39,11 @@ cd() { # follow every "cd" command with "ls"
 mkcd() { # Make folder and enter it
 NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
 
+lss() { # don't show hidden, but count them
+exa -F --group-directories-first -s modified $1
+echo "["$(($(command ls $1 -A | wc -l) - $(command ls $1 | wc -l)))" hidden]"
+}
+
 cx() { # quick termux clipboard
     if [[ -n "$*" ]]; then
         echo -e "${*//\\/\\\\}" | termux-clipboard-set
@@ -238,4 +243,8 @@ if [[ -z "$INSIDE_EMACS" ]]; then
     emacsclient -t
 else
     echo "Already inside Emacs!"
+unalias e
+# can open files like that in term!
+alias e="emacsclient -n"
+    echo "Remapping aliases.."
 fi
