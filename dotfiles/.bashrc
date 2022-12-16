@@ -42,7 +42,7 @@ NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
 lss() { # don't show hidden, but count them
 exa -F --group-directories-first -s modified $1
 echo "["$(($(command ls $1 -A | wc -l) - $(command ls $1 | wc -l)))" hidden]"
-}
+} ; alias ls=lss
 
 cx() { # quick termux clipboard
     if [[ -n "$*" ]]; then
