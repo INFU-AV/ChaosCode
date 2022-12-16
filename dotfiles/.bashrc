@@ -39,10 +39,15 @@ cd() { # follow every "cd" command with "ls"
 mkcd() { # Make folder and enter it
 NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
 
-lss() { # don't show hidden, but count them
-exa -F --group-directories-first -s modified $1
-echo "["$(($(command ls $1 -A | wc -l) - $(command ls $1 | wc -l)))" hidden]"
-} ; alias ls=lss
+lsH() { # don't show hidden, but count them
+  local DIR="$*"
+  (( ! "$#" )) && DIR=$PWD; # if no DIR given, do $PWD
+exa -F --group-directories-first -s modified $DIR
+echo "[$(command ls -d .* | wc -l) hidden]"
+# echo "["$(($(command ls $DIR -A | wc -l) - $(command ls $DIR | wc -l)))" hidden]"
+} ; alias ls=lsH
+# would be cool to have ls that reacts on
+# previous ls command, becoming "ls -A"
 
 cx() { # quick termux clipboard
     if [[ -n "$*" ]]; then
