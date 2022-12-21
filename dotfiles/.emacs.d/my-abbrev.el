@@ -78,11 +78,8 @@
     
     ("os3" "operating system" )
     
-    ;; programing
-    ("utf8" "-*- coding: utf-8 -*-" )
-    
     ;; regex
-    ("xaz" "\\([A-Za-z0-9]+\\)" )
+    ;; ("xaz" "\\([A-Za-z0-9]+\\)" )
     
     ;; unicode
 

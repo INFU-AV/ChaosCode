@@ -4,7 +4,6 @@
 	(split-window-below)
 	(balance-windows)
 	(other-window 1))
- (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
 
  (defun split-and-follow-vertically ()
 	"Split and follow vertically."
@@ -12,28 +11,8 @@
 	(split-window-right)
 	(balance-windows)
 	(other-window 1))
- (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 
 ;;;;;;;;;;;;xahutils-start
-
-(defun xah-comment-dwim ()
-    "Like `comment-dwim', but toggle comment if cursor is not at end of line.
-URL `http://xahlee.info/emacs/emacs/emacs_toggle_comment_by_line.html'
-Version 2016-10-25"
-(interactive)
-(if (region-active-p)
-    (comment-dwim nil)
- (let (($lbp (line-beginning-position))
-	($lep (line-end-position)))
-  (if (eq $lbp $lep)
-	(progn
-	    (comment-dwim nil))
-	    (if (eq (point) $lep)
-		(progn
-		    (comment-dwim nil))
-		(progn
-		(comment-or-uncomment-region $lbp $lep)
-		    (forward-line )))))))
 
 (defun xah-dired-sort ()
   "Sort dired dir listing in different ways.
@@ -52,6 +31,7 @@ Version: 2018-12-23 2022-04-07"
     (dired-sort-other xarg )))
 
 (defvar infu-bionic-reading-face nil "a face for `infu-bionic-reading-region'.")
+
 (setq infu-bionic-reading-face 'error)
 ;; (setq infu-bionic-reading-face 'error)
 ;; try
@@ -113,34 +93,24 @@ Version 2022-05-21"
                            'font-lock-face infu-bionic-reading-face)))))
 (provide 'infu-bionic-face)
 
-(defun xah-space-to-newline ()
-  "Replace space sequence to a newline char.
-Works on current block or selection.
-URL `http://xahlee.info/emacs/emacs/emacs_space_to_newline.html'
-Version 2017-08-19"
-  (interactive)
-  (let* ( $p1 $p2 )
-    (if (use-region-p)
-        (progn
-          (setq $p1 (region-beginning))
-          (setq $p2 (region-end)))
-      (save-excursion
-        (if (re-search-backward "\n[ \t]*\n" nil "move")
-            (progn (re-search-forward "\n[ \t]*\n")
-                   (setq $p1 (point)))
-          (setq $p1 (point)))
-        (re-search-forward "\n[ \t]*\n" nil "move")
-        (skip-chars-backward " \t\n" )
-        (setq $p2 (point))))
-    (save-excursion
-      (save-restriction
-        (narrow-to-region $p1 $p2)
-        (goto-char (point-min))
-        (while (re-search-forward " +" nil t)
-          (replace-match "\n" ))))))
-(provide 'xah-space-to-newline)
-
 ;;;;;;;;;;;;xahutils-end
+
+;"grt/" https://grtcdr.tn/dotfiles/emacs/
+(defun grt/kill-current-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+(defun grt/kill-current-window ()
+  "Kill the current buffer and window."
+  (interactive)
+  (grt/kill-current-buffer)
+  (delete-window))
+
+(defun grt/scratchpad ()
+  "Switch to the scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
 
 ;; from Doom:
 (defun +evil/shift-right ()
@@ -155,6 +125,7 @@ Version 2017-08-19"
   (call-interactively #'evil-shift-left)
   (evil-normal-state)
   (evil-visual-restore))
+
 (defun +evil/alt-paste ()
   "Call `evil-paste-after' but invert `evil-kill-on-visual-paste'.
 By default, this replaces the selection with what's in the clipboard without
@@ -162,9 +133,6 @@ replacing its contents."
   (interactive)
   (let ((evil-kill-on-visual-paste (not evil-kill-on-visual-paste)))
     (call-interactively #'evil-paste-after)))
-( define-key evil-visual-state-map (kbd "<") '+evil/shift-left)
-( define-key evil-visual-state-map (kbd ">") '+evil/shift-right)
-( define-key evil-visual-state-map (kbd "gp") '+evil/alt-paste)
 
 ;; make sure dired buffers end in a slash so we can identify them easily
 ;; lifted from: https://iqss.github.io/IQSS.emacs/init.html#make_emacs_friendlier_to_newcomers

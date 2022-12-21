@@ -19,5 +19,7 @@ else
   cat Rtermux.properties > termux.properties
 fi
 
+exec termux-reload-settings
+
 # I had an idea to make those 2 spare termux properties + this script as self contained, single file, self-editable script - maybe someday!
 # cat Ltermux.properties > termux.properties ; printf 'cat Rtermux.properties > termux.properties' > selfmod.sh ;

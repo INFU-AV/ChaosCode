@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# https://infu.fyi/
+
+# Main repo:
+# https://github.com/INFU-AV/ChaosCode
 
 # Navigate Headers:
 ##### ALIASES
@@ -71,6 +73,10 @@ else
 fi
 }
 
+swap() { # Termux Extra-Keys swapper
+"$HOME/.termux/swap.sh"
+} # using it as macro on extra-keys
+
 exports() { # personal phone locations I use often:
 export dl="$HOME/storage/downloads"
 export ex="$HOME/storage/external-1"
@@ -112,10 +118,9 @@ if ! emacsclient -e 0 >&/dev/null; then
 fi
 
 ##### TITLE ZONE
-# Backup motd lmao
-# http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
-# nr1 from https://fsymbols.com/text-art/
+# Backup motds lmao
 
+# https://fsymbols.com/text-art/
 #  ██╗███╗░░██╗███████╗██╗░░░██╗
 #  ██║████╗░██║██╔════╝██║░░░██║
 #  ██║██╔██╗██║█████╗░░██║░░░██║
@@ -123,6 +128,7 @@ fi
 #  ██║██║░╚███║██║░░░░░╚██████╔╝
 #  ╚═╝╚═╝░░╚══╝╚═╝░░░░░░╚═════╝░
 
+# http://patorjk.com/software/taag/#p=display&f=Graffiti&t=INFU
 # .___ _______  _______________ ___
 # |   |\      \ \_   _____/    |   \
 # |   |/   |   \ |    __) |    |   /
@@ -139,16 +145,15 @@ scanline() { # roll out banners bit by bit
 return
 }
 
-if [[ $SHLVL == 1 && -z "$INSIDE_EMACS" ]]; then
-    scanline "\n" \
+if [[ $SHLVL == 1 && -z "$INSIDE_EMACS" ]]
+then scanline "\n" \
     " ██╗" "███╗░░██╗" "███████╗" "██╗░░░██╗\n" \
     " ██║" "████╗░██║" "██╔════╝" "██║░░░██║\n" \
     " ██║" "██╔██╗██║" "█████╗░░" "██║░░░██║\n" \
     " ██║" "██║╚████║" "██╔══╝░░" "██║░░░██║\n" \
     " ██║" "██║░╚███║" "██║░░░░░" "╚██████╔╝\n" \
     " ╚═╝" "╚═╝░░╚══╝" "╚═╝░░░░░" "░╚═════╝░\n\n"
-else
-    scanline "\n" \
+else scanline "\n" \
     ".___ _______  _______________ ___  \n" \
     "|   |\      \ \_   _____/    |   \ \n" \
     "|   |/   |   \ |    __) |    |   / \n" \
@@ -253,3 +258,5 @@ unalias e
 alias e="emacsclient -n"
     echo "Remapping aliases.."
 fi
+
+# https://infu.fyi/
