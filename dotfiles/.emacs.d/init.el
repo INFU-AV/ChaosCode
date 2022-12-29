@@ -89,16 +89,16 @@ The Yak-Shaving necessity!"
 
     ; ===== DEBUGGING: ===== ;	
 ; (Setq debug-on-error t)
-;;  ; ..or  'M-x "toggle-debug-on-error"'
-; M-x "redraw-display"
-;;  ; ..should get rid of visual glitches
-; M-x "memory-report" ; to see summary of
-;;  ;    for bootup-time analysis:
-; (setq use-package-compute-statistics 1)
+  ; ..or  'M-x "toggle-debug-on-error"'
+ ; M-x "redraw-display"
+  ; ..should get rid of visual glitches
+ ; M-x "memory-report" ; to see summary of
+;; ! for bootup-time analysis:
+;; (setq use-package-compute-statistics 1)
+;; (setq use-package-verbose t) ; see what packages get loaded in detail
+;; (setq use-package-minimum-reported-time 0.01)
 ;;  ; then use M-x "use-package-report"
 ;;  ; to see stats from function above
-;; (setq use-package-verbose t) ; see what packages get loaded in detail
-;; (setq use-package-minimum-reported-time 0.0001)
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
 ;; Emacs has neat way of setting up
@@ -110,7 +110,6 @@ The Yak-Shaving necessity!"
 ;;  loading customisations early in init.el
 ;;  or right by the very end!
 ;; Stick to one that works for you
-
 
 ;; If custom.el doesn't exist, packages probably too!
 ;; my sneaky way of deploying from scratch:
@@ -169,6 +168,7 @@ The Yak-Shaving necessity!"
  evil-want-keybinding nil
  evil-auto-indent nil
  evil-move-cursor-back nil
+ evil-cross-lines t
  evil-kill-on-visual-paste nil)
     :config
 (setq  evil-search-module 'isearch)
@@ -188,40 +188,90 @@ The Yak-Shaving necessity!"
 (setq annalist-record nil)
     :config
 (evil-collection-init `(
+    anaconda-mode
     apropos
+    chrome
+    auto-package-update
+    bookmark
     (buff-menu "buff-menu")
+    calc
+    calendar
     compile
+    corfu
+    crdt
+    dashboard
+    daemons
+    debug
+    dictionary
     dired
+    doc-view
+    edebug
+    eglot
+    eldoc
     elfeed
     elisp-mode
     elisp-refs
+    embark
+    emms
     ,@(when (>= emacs-major-version 29) '(emoji))
+    epa
+    eshell
+    eww
     finder
+    flycheck
+    flymake
     free-keys
     grep
+    hackernews
     help
+    helpful
     ibuffer
     imenu
     imenu-list
     (indent "indent")
+    info
+    man
     markdown-mode
+    ,@(when evil-collection-setup-minibuffer '(minibuffer))
+    mpc
     org
+    org-present
+    org-roam
     outline
     (package-menu package)
     pass
-    (process-menu simple)
+    popup
+    proced
+    profiler
     python
+    replace
+    restclient
+    rg
+    ripgrep
+    scroll-lock
     sh-script
-    ,@(when (>= emacs-major-version 28) '(shortdoc))
-    simple
-    ,@(when (>= emacs-major-version 27) '(tab-bar))
-    ;; tabulated-list
+    shortdoc
+    so-long
+    speedbar
+    tab-bar
+    tablist
+    tabulated-list
     (term term ansi-term multi-term)
-    ,@(when (>= emacs-major-version 27) '(thread))
+    timer-list
+    vdiff
+    vertico
+    view
+    vterm
     which-key
+    xref
+    xwidget
+    yaml-mode
+    youtube-dl
+    zmusic
 )))
 
         (use-package undo-fu
+    :after evil-collection
     ;undo functionality for Evil
     :config (setq undo-limit 3355443200) ;; 32mb.
 ;; (setq undo-strong-limit 100663296) ;; 96mb.
@@ -239,8 +289,8 @@ The Yak-Shaving necessity!"
         (use-package crux
     :defer t)
  
-(use-package which-key
-    :defer 3
+        (use-package which-key
+    :defer t
     :custom
 (setq which-key-max-display-columns 8
 ;; (setq which-key-popup-type 'minibuffer)
@@ -252,12 +302,12 @@ The Yak-Shaving necessity!"
 (which-key-mode))
 
     ;; my custom keymap: INFU-map ;;
-(define-prefix-command 'infu-map)
+    (define-prefix-command 'infu-map)
 ;Those are couple of keybindings I made to fit;
 ;my workflow using Termux & mobile keyboards ;
 ;GOALS: Functionality that's close & familiar;
     ;; 2 ways to summon it:
-(define-key evil-motion-state-map (kbd ",") 'infu-map)
+(define-key evil-motion-state-map (kbd "SPC") 'infu-map)
 
 (global-set-key  (kbd "\e,") `infu-map) ; "ESC-," in case one above is occupied
     ;; init.el yak shaving set:
@@ -266,17 +316,15 @@ The Yak-Shaving necessity!"
 (define-key infu-map (kbd "M-e") 'crux-find-shell-init-file)
 (define-key infu-map (kbd "E") 'eval-buffer)
 (define-key infu-map (kbd "p") 'list-packages)
-;; (define-key infu-map (kbd "SPC") 'eval-region)
-
+; (define-key infu-map (kbd "SPC") 'eval-region)
 (define-key infu-map (kbd ".") 'describe-char)
-
     ;; Ease of life functions
 (define-key infu-map (kbd ".") 'evil-window-prev)
+(define-key infu-map (kbd "SPC") 'evil-window-next)
 (define-key infu-map (kbd ",") 'evil-window-next)
 (define-key infu-map (kbd "y") 'yank-from-kill-ring) 
 (define-key infu-map (kbd "(") 'check-parens) 
-
-; https://puntoblogspot.blogspot.com/2018/11/evilmacs-macros.html
+    ; https://puntoblogspot.blogspot.com/2018/11/evilmacs-macros.html
 (define-key infu-map (kbd "Z") 'kmacro-start-macro)
 (define-key infu-map (kbd "z") 'kmacro-end-or-call-macro)
 
@@ -291,13 +339,11 @@ The Yak-Shaving necessity!"
 (define-key infu-map (kbd "k") 'grt/kill-current-buffer) ;(B;)
 (define-key infu-map (kbd "K") 'kill-buffer-and-window)
 
-(define-key infu-map (kbd "C-k") 'tab-close)
 
 (define-key infu-map (kbd "d") 'dired)
  ; Rewrite this one as relative path:
 (define-key infu-map (kbd "a") 'list-abbrevs)
 (define-key infu-map (kbd "A") (lambda() (interactive)(find-file "$HOME/.emacs.d/my-abbrev.el"))) 
-(define-key infu-map (kbd "t") 'tab-bar-new-tab)
 (define-key infu-map (kbd "M-t") (lambda() (interactive)(find-file "$HOME/xinfu/todo.md")))
 (define-key infu-map (kbd "TAB") 'hs-minor-mode)
 (define-key infu-map (kbd "C-m") 'bookmark-bmenu-list)
@@ -312,8 +358,9 @@ The Yak-Shaving necessity!"
 (define-key infu-map (kbd "M-2") '2C-split)
 (define-key infu-map (kbd "3") 'split-and-follow-vertically) ;(B);
 (define-key infu-map (kbd "M-3") '2C-two-columns)
-
 (define-key infu-map (kbd "4") 'follow-delete-other-windows-and-split)
+(define-key infu-map (kbd "5") 'tab-bar-new-tab)
+(define-key infu-map (kbd "M-5") 'tab-close)
 
 (define-key infu-map (kbd "<next>") 'scroll-other-window)
 (define-key infu-map (kbd "<prior>") 'scroll-other-window-down)
@@ -322,6 +369,20 @@ The Yak-Shaving necessity!"
 ;; ( define-key evil-normal-state-map (kbd "l") "")
 (fset 'shfunc
    (kmacro-lambda-form [?O ?f ?u ?n ?c ?\C-? ?\C-? ?\C-? ?u ?n ?1 ?  ?\( ?\C-\[ ?O ?C ?  ?\{ ?\C-\[ ?\[ ?3 ?~ ?\C-\[ ?O ?B ?\C-\[ ?O ?H ?\C-\[ ?O ?B ?\} ?\C-m escape] 0 "%d"))
+
+    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+    ;; to not overload my init.el with
+    ;; tons blocks of code, i split it here:
+(load "~/.emacs.d/bonus.el" nil t)
+    ;; Code refferencing stuff in bonus.el
+    ;; will be marked this way: ;(B);
+    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
+    ;;
+    ;;
+ 
+(evil-define-key 'normal dired-mode-map (kbd "s") 'xah-dired-sort) ;(B);
+    ;;
+    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
 ;; --- EVIL INFU
 (define-key isearch-mode-map (kbd "TAB") 'isearch-complete)
@@ -340,18 +401,32 @@ The Yak-Shaving necessity!"
 (define-key evil-motion-state-map (kbd ",") 'infu-map)
 (define-key evil-visual-state-map (kbd "g c") 'comment-dwim)
 (define-key evil-normal-state-map (kbd "g c") 'comment-line)
-(define-key evil-normal-state-map (kbd "g C-c") 'crux-duplicate-and-comment-current-line-or-region)
+(define-key evil-motion-state-map (kbd "g C-c") 'crux-duplicate-and-comment-current-line-or-region)
 
 (define-key evil-motion-state-map (kbd "<next>") 'evil-forward-paragraph)
 (define-key evil-motion-state-map (kbd "<prior>") 'evil-backward-paragraph)
+(define-key evil-insert-state-map (kbd "<next>") 'evil-forward-section-begin)
+(define-key evil-insert-state-map (kbd "<prior>") 'evil-backward-section-begin)
 
-(define-key evil-insert-state-map (kbd "C-O") 'evil-open-below)
-(define-key evil-insert-state-map (kbd "C-o" ) 'evil-open-above)
+; kinda random mess here:
+(setq double-click-fuzz 10)
+;; (global-set-key [mouse-1] 'context-menu-open)
+(global-set-key [double-mouse-1] 'context-menu-open)
+(setq context-menu-mode 't)
+
+(define-key function-key-map (kbd "<f8>") 'event-apply-hyper-modifier)
+(define-key input-decode-map (kbd "ESC O P") '"")
+;; (define-key double-map (kbd ".") '"x")
+(define-key input-decode-map (kbd "ESC [ 2 ~") '"x")
+(define-key input-decode-map (kbd "ESC O n") '".")
+(define-key evil-insert-state-map (kbd "C-b") 'evil-open-below)
+(define-key evil-insert-state-map (kbd "C-e" ) 'evil-open-above)
 ;; soon adding hyper key
 (global-set-key (kbd "H-f" ) 'ffap)
 
 
 	(use-package hydra
+    :defer 1
 	;more key combo/menus;
     :config
     ;; (setq hydra-lv t)
@@ -389,29 +464,10 @@ The Yak-Shaving necessity!"
 (setq abbrev-file-name "~/.emacs.d/my-abbrev.el")
 ; command to start abbrev-mode is inside abbrev file
 (setq abbrev-suggest 't)
-(setq abbrev-suggest-hint-threshold 1)
-)
-
-
-;; ; Turn off unwanted modes
-;; (dolist (this-minor-mode
-;;          '(csv-field-index-mode
-;;            diff-auto-refine-mode
-;;            file-name-shadow-mode
-;;           auto-encryption-mode
-;;            global-magit-file-mode
-;;            treemacs-filewatch-mode
-;;            treemacs-follow-mode
-;;            treemacs-git-mode
-;;            Shell-Dirtrack
-;;            prettify-symbols-mode
-;;            global-prettify-symbols-mode
-;;            treemacs-fringe-indicator-mode))
-;;   (when (fboundp this-minor-mode)
-;;     (funcall this-minor-mode 0)))
+(setq abbrev-suggest-hint-threshold 1))
 
         (use-package helpful
-    :defer 2
+    :defer t
     :bind
 (("C-h k" . helpful-key)
  ("C-h h" . helpful-at-point)
@@ -419,57 +475,42 @@ The Yak-Shaving necessity!"
  ("C-h F" . helpful-function)
  ("C-h C" . helpful-command)))
 
-  ;; disabled as Im trying vertico ;;
-;;         (use-package ido
-;; ;; (setf (nth 2 ido-decorations) "\n")
-;;     :init (setq ido-separator "\n")
-;; ;; show any name that has the chars you typed
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere 1)
-;;     :config (ido-mode 1))
-
-;; 	(use-package icomplete
-;;     ;; show choices vertically
-;; 	;; :ensure nil
-;;     :defer 1
-;;     :init
-;; (setq icomplete-separator "\n")
-;; (setq icomplete-hide-common-prefix nil)
-;; (setq icomplete-in-buffer t)
-;;     :config
-;; (define-key icomplete-minibuffer-map (kbd "<right>") 'icomplete-forward-completions)
-;; (define-key icomplete-minibuffer-map (kbd "<left>") 'icomplete-backward-completions)
-;; (define-key icomplete-minibuffer-map (kbd "<backtab>") 'icomplete-force-complete)
-;; (define-key icomplete-minibuffer-map (kbd "M-<RET>") 'icomplete-force-complete-and-exit)
-;; (icomplete-mode 1)
-;; (setq completion-cycle-threshold 4)
-;; )
-
         (use-package marginalia
     :init (marginalia-mode t)
-  :config
+    :config
 (setq marginalia--ellipsis "…"    ; Nicer ellipsis
       marginalia-align 'right     ; right alignment
       marginalia-align-offset -1) ; one space on the right
-  :bind ("C-c m" . marginalia-mode))
+    :bind ("C-c m" . marginalia-mode))
 
+        (use-package embark
+    :bind
+(("C-." . embark-act)         ;; pick some comfortable binding
+("C-;" . embark-dwim)        ;; good alternative: M-.
+("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    :init
+;; Optionally replace the key help with a completing-read interface
+(setq prefix-help-command #'embark-prefix-help-command)
+    :config
+;; Hide the mode line of the Embark live/completions buffers
+(add-to-list 'display-buffer-alist
+        '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+            nil
+            (window-parameters (mode-line-format . none)))))
 
         (use-package vertico
     :custom (vertico-cycle t)
-    :init
-(vertico-mode)
+    :init (vertico-mode)
 (define-key vertico-map (kbd "C-S-n") 'vertico-next)
 (define-key vertico-map (kbd "C-S-p") 'vertico-previous)
 (define-key vertico-map "?" #'minibuffer-completion-help)
 (define-key vertico-map (kbd "M-RET") #'minibuffer-force-complete-and-exit)
 (define-key vertico-map (kbd "M-TAB") #'minibuffer-complete)
-
 (setq crm-separator ",")
 ;; Add prompt indicator to `completing-read-multiple'.
 (defun crm-indicator (args)
   (cons (concat "[CRM] " (car args)) (cdr args)))
 (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
 (setq vertico-resize nil         ; How to resize the Vertico minibuffer window.
        vertico-count 7           ; Maximal number of candidates to show.
        vertico-count-format nil) ; No prefix with number of entries
@@ -504,24 +545,18 @@ The Yak-Shaving necessity!"
     (when (or (and (> dp 0) (/= height 0))
                 (and (< dp 0) (eq vertico-resize t)))
         (window-resize nil dp nil nil 'pixelwise)))))
-(advice-add #'vertico--resize-window :override #'my/vertico--resize-window)
-)
+(advice-add #'vertico--resize-window
+    :override #'my/vertico--resize-window))
 
         (use-package savehist
     :config (savehist-mode 1))
 
 	(use-package auto-complete
-    :defer 1
+    :defer 2
     :config
 (ac-config-default)
 (auto-complete-mode 1))
 
-;; 	(use-package orderless
-;;     :defer 1
-;;     :init
-;; (setq completion-styles '(orderless basic)
-;; completion-category-defaults nil
-;; completion-category-overrides '((file (styles basic partial-completion initials)))))
         (use-package orderless
     :defer 1
     :init
@@ -530,25 +565,9 @@ The Yak-Shaving necessity!"
       completion-category-overrides
         '((file (styles basic partial-completion)))))
 
-    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
-    ;; to not overload my init.el with
-    ;; tons blocks of code, i split it here:
-(load "~/.emacs.d/bonus.el" nil t)
-    ;; Code refferencing stuff in bonus.el
-    ;; will be marked this way: ;(B);
-    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
-    ;;
-    ;;
-
         (use-package infu-bionic-face ;(B);
     :commands
 (infu-bionic-reading-buffer - infu-bionic-reading-region))
- 
-; M-x ^
-    ;; xah-dired-sort ;(B);
-(evil-define-key 'normal dired-mode-map (kbd "s") 'xah-dired-sort)
-    ;;
-    ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
         (use-package winner
     :defer 1
@@ -571,14 +590,12 @@ The Yak-Shaving necessity!"
 	; move lines up/down ;
     ;; :config (move-text-default-bindings))
     :bind
-("ESC <up>" . move-text-up)
-("M-<up>" . move-text-up)
-("ESC <down>" . move-text-down)
-("M-<down>" . move-text-down))
+(("S-<up>" . move-text-up)
+("S-<down>" . move-text-down)))
 
 ; Clean unsaved buffers after 600 seconds
-(run-with-idle-timer 600 t (lambda ()
-                               (my-clean-frames-and-buffers)))
+        (run-with-idle-timer 600 t (lambda ()
+    (my-clean-frames-and-buffers)))
 (defun my-clean-frames-and-buffers ()
   "Kills all unmodified buffers and closes all but the selected frame."
   (interactive)
@@ -595,18 +612,37 @@ The Yak-Shaving necessity!"
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
+        (use-package elfeed
+    :defer t
+    ;; :init
+    :config
+; https://nullprogram.com/blog/2013/09/04/
+; https://lucidmanager.org/productivity/read-rss-feeds-with-emacs-and-elfeed/
+; https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/
+;
+(setq elfeed-feeds 
+'(("https://www.littlesounddj.com/lsd/latest/CHANGELOG.rss" chiptune)
+  ("https://chipmusic.org/music/rss/feed.xml" chiptune)
+("https://emacs.ch/@melpa.rss" emacs)
+; ("YOURLINKHERE" TAGHERE)
+))
+(setq shr-width 80) ;; Read view narrowing
+)
+
         (use-package org-ehtml
-    :defer 5
+    :defer t
     :config
 (defun ehtml-start () 
 (ws-start org-ehtml-handler 8888))
     :commands (ehtml-start))
 
         (use-package org-protocol
-    :defer 5
+    :defer t
     :init
-    :config
-)
+    :config)
+
+        (use-package mastodon :disabled)
+        (use-package todoist :disabled)
 
  ;; emacs multiplayer package ;;
         (use-package crdt  :disabled)
@@ -618,7 +654,7 @@ The Yak-Shaving necessity!"
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
 	(use-package dired
-    :defer 2
+    :defer t
     ;; :ensure nil
     ;; :hook (dired-mode . 
     :config 
@@ -632,7 +668,7 @@ The Yak-Shaving necessity!"
 ((dired-listing-switches "-agho --group-directories-first")))
 
 	(use-package diredfl
-    :defer 2
+        ; beautify dired buffer
     :after dired
     :hook (dired-mode . diredfl-mode))
 
@@ -662,8 +698,7 @@ The Yak-Shaving necessity!"
 
         (use-package markdown-preview
     :defer t
-    :commands (markdown-preview-mode)
-)
+    :commands (markdown-preview-mode))
 
      	(use-package zk
     :defer t
@@ -673,45 +708,57 @@ The Yak-Shaving necessity!"
     :config
 (zk-setup-auto-link-buttons)
     (defhydra hydra-zk ( :columns 2 :color blue :hint none)
-"===== zk  =====
+    "===== zk  =====
 [n]ew,[f]ind,[l]ink in, ([L] for new)
 [s]earch,[t]ag search / [i]nsert"
-("n" zk-new-note)
-("f" zk-find-file)
-("l" zk-insert-link)
-("b" zk-backlinks)
-("s" zk-search)
-("i" zk-tag-insert)
-("t" zk-tag-search))
-   :bind (:map infu-map
-("c" . hydra-zk/body)
-("C" . zk-index)))
+    ("n" zk-new-note)
+    ("f" zk-find-file)
+    ("l" zk-insert-link)
+    ("b" zk-backlinks)
+    ("s" zk-search)
+    ("i" zk-tag-insert)
+    ("t" zk-tag-search))
+    :bind (:map infu-map
+    ("c" . hydra-zk/body)
+    ("C" . zk-index)))
 
-;;       	(use-package zk-index
-;;     :after zk
-;;     :config 
-;;  	    (defvar zk-index-mode-map
-;;     (let ((map (make-sparse-keymap)))
-;; (define-key map (kbd "n") #'zk-index-next-line)
-;; (define-key map (kbd "p") #'zk-index-previous-line)
-;; (define-key map (kbd "v") #'zk-index-view-note)
-;; (define-key map (kbd "o") #'other-window)
-;; (define-key map (kbd "f") #'zk-index-focus)
-;; (define-key map (kbd "s") #'zk-index-search)
-;; (define-key map (kbd "d") #'zk-index-send-to-desktop)
-;; (define-key map (kbd "D") #'zk-index-switch-to-desktop)
-;; (define-key map (kbd "c") #'zk-index-current-notes)
-;; (define-key map (kbd "i") #'zk-index-refresh)
-;; (define-key map (kbd "S") #'zk-index-sort-size)
-;; (define-key map (kbd "M") #'zk-index-sort-modified)
-;; (define-key map (kbd "C") #'zk-index-sort-created)
-;; (define-key map (kbd "RET") #'zk-index-open-note)
-;; (define-key map (kbd "q") #'delete-window)
-;; (make-composed-keymap map tabulated-list-mode-map))
-;;   "Keymap for ZK-Index buffer.")
-;; (zk-index-setup-embark)
-;;     :custom (zk-index-desktop-directory zk-directory))
+        (use-package zk-desktop
+    :after zk-index
+    :config
+(zk-desktop-setup-embark)
+    :custom
+(zk-desktop-directory zk-directory))
 
+        (use-package zk-index
+    :after zk
+    :config (zk-index-setup-embark))
+(defvar zk-index-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "n") #'zk-index-next-line)
+    (define-key map (kbd "p") #'zk-index-previous-line)
+    (define-key map (kbd "v") #'zk-index-view-note)
+    (define-key map (kbd "o") #'other-window)
+    (define-key map (kbd "f") #'zk-index-focus)
+    (define-key map (kbd "s") #'zk-index-search)
+    (define-key map (kbd "g") #'zk-index-query-refresh)
+    (define-key map (kbd "d") #'zk-desktop-send-to-desktop)
+    (define-key map (kbd "D") #'zk-desktop-switch-to-desktop)
+    (define-key map (kbd "c") #'zk-index-current-notes)
+    (define-key map (kbd "i") #'zk-index-refresh)
+    (define-key map (kbd "S") #'zk-index-sort-size)
+    (define-key map (kbd "M") #'zk-index-sort-modified)
+    (define-key map (kbd "C") #'zk-index-sort-created)
+    (define-key map (kbd "RET") #'zk-index-open-note)
+    (define-key map (kbd "q") #'delete-window)
+    (make-composed-keymap map tabulated-list-mode-map))
+  "Keymap for ZK-Index buffer.")
+
+        (use-package org
+    :defer 3
+    :config
+(setq initial-buffer-choice ".emacs.d/welcome.org")
+)
+ 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;; ----- Functionality:
@@ -793,21 +840,60 @@ The Yak-Shaving necessity!"
     ;; :ensure nil
     :config (tooltip-mode 0))
 
-        (use-package elfeed
-    :defer 2
-    ;; :init
+        (use-package vdiff
+    :init
     :config
-; https://nullprogram.com/blog/2013/09/04/
-; https://lucidmanager.org/productivity/read-rss-feeds-with-emacs-and-elfeed/
-; https://blog.dornea.nu/2022/06/29/rss/atom-emacs-and-elfeed/
-;
-(setq elfeed-feeds 
-'(("https://www.littlesounddj.com/lsd/latest/CHANGELOG.rss" chiptu)
-  ("https://chipmusic.org/music/rss/feed.xml" chiptune)
-; ("YOURLINKHERE" TAGHERE)
-))
-(setq shr-width 80) ;; Read view narrowing
+(define-key infu-map (kbd "v") 'vdiff-hydra/body)
+
+;; (define-key diff-map (kbd "C-c C-a") 'diff-apply-hunk)
+;; (define-key diff-map (kbd "C-c C-b") 'diff-refine-hunk)
+;; (define-key diff-map (kbd "C-c C-c") 'diff-goto-source)
+;; (define-key diff-map (kbd "C-c C-d") 'diff-unified->context)
+;; (define-key diff-map (kbd "C-c C-e") 'diff-ediff-patch)
+;; (define-key diff-map (kbd "C-c C-f") 'next-error-follow-minor-mode)
+;; (define-key diff-map (kbd "C-c C-l") 'diff-refresh-hunk)
+;; (define-key diff-map (kbd "C-c C-n") 'diff-restrict-view)
+;; (define-key diff-map (kbd "C-c C-r") 'diff-reverse-direction)
+;; (define-key diff-map (kbd "C-c C-s") 'diff-split-hunk)
+;; (define-key diff-map (kbd "C-c C-t") 'diff-test-hunk)
+;; (define-key diff-map (kbd "C-c C-u") 'diff-context->unified)
+;; (define-key diff-map (kbd "C-c C-w") 'diff-ignore-whitespace-hunk)
+;; (define-key diff-map (kbd "C-M-i") 'diff-hunk-next)
+;; (define-key diff-map (kbd "M-RET") 'diff-goto-source)
+;; (define-key diff-map (kbd "M-SPC") 'scroll-up-command)
+;; (define-key diff-map (kbd "M--") 'negative-argument)
+;; (define-key diff-map (kbd "M-1 .. M-9") 'digit-argument)
+;; (define-key diff-map (kbd "M-<") 'beginning-of-buffer)
+;; (define-key diff-map (kbd "M->") 'end-of-buffer)
+;; (define-key diff-map (kbd "M-K") 'diff-file-kill)
+;; (define-key diff-map (kbd "M-N") 'diff-file-next)
+;; (define-key diff-map (kbd "M-P") 'diff-file-prev)
+;; (define-key diff-map (kbd "M-k") 'diff-hunk-kill)
+;; (define-key diff-map (kbd "M-n") 'diff-hunk-next)
+;; (define-key diff-map (kbd "M-o") 'diff-goto-source)
+;; (define-key diff-map (kbd "M-p") 'diff-hunk-prev)
+;; (define-key diff-map (kbd "M-{") 'diff-file-prev)
+;; (define-key diff-map (kbd "M-}") 'diff-file-next)
+;; (define-key diff-map (kbd "M-DEL") 'scroll-down-command)
+;; (define-key diff-map (kbd "M-S-SPC") 'scroll-down-command)
+;; (define-key diff-map (kbd "ESC <backtab>") 'diff-hunk-prev)
+;; (define-key diff-map (kbd "ESC <mouse-2>") 'diff-goto-source)
+;; (define-key diff-map (kbd "ESC <normal-state>") 'Prefix Command)
+;; (define-key diff-map (kbd "ESC <remap>") 'Prefix Command)
+;; (define-key diff-map (kbd "M-g r") 'revert-buffer)
+;; (define-key diff-map (kbd "C-x 4 A") 'diff-add-change-log-entries-other-window)
+;; (define-key diff-map (kbd "ESC <remap> <undo>") 'diff-undo)
+;; (define-key diff-map (kbd "ESC <normal-state> Z") 'Prefix Command)
+;; (define-key diff-map (kbd "ESC <normal-state> q") 'quit-window)
+;; (define-key diff-map (kbd "ESC <normal-state> <remap>") 'Prefix Command)
+;; (define-key diff-map (kbd "ESC <normal-state> Z Q") 'evil-quit)
+;; (define-key diff-map (kbd "ESC <normal-state> Z Z") 'quit-window)
+
 )
+ 
+(setq-default compilation-always-kill t)
+(setq-default compilation-ask-about-save nil) ; save all buffers on `compile'
+(setq-default compilation-scroll-output t)
 
 (setq use-dialog-box nil);; don't use dialog boxes to ask questions
 (setq use-file-dialog nil);; don't use a file dialog to ask for files
@@ -823,81 +909,6 @@ The Yak-Shaving necessity!"
 ; italizing/bolding text stuff
 ; https://github.com/localauthor/.emacs.d/blob/main/init.el#L228
 
-(defun infu/faces()
-(make-face 'Infu-Red)
-(set-face-attribute 'Infu-Red nil
-    :foreground "#FF4444"
-    :background "#000000"
-    :weight 'ultra-bold
-    :overline "white"
-    ;; :slant 'italic
-    :underline "white")
-(make-face 'Infu-Yellow-bg)
-(set-face-attribute 'Infu-Yellow-bg nil
-;; :foreground "#000000"
-    :background "#333300"
-    ;; :foreground "#333300"
-    ;; :background "#FFFF00"
-    ;; :weight 'ultra-bold
-    ;; :slant 'oblique
-    :overline "#FFFF00"
-    :underline "#FFFF00")
-(make-face 'Infu-Yellow)
-(set-face-attribute 'Infu-Yellow nil
-    :foreground "#FFFF00"
-    :background "#333300"
-    :weight 'ultra-bold
-    ;; :slant 'oblique
-    :underline 't)
-(make-face 'Infu-Blue)
-(set-face-attribute 'Infu-Blue nil
-    :foreground "#44aaff"
-    :background "#000033"
-    :weight 'bold
-    :slant 'normal
-    :underline 't)
-(make-face 'Infu-Green)
-(set-face-attribute 'Infu-Green nil
-    :foreground "#00ff00"
-    :background "#003300"
-    :weight 'ultra-bold
-    :slant 'normal
-    :underline 't)
-(make-face 'Infu-Purple)
-(set-face-attribute 'Infu-Purple nil
-    :foreground "#FF33FF"
-    :background "#330033"
-    ;; :weight 'bold
-    ;; :slant 'reverse-oblique
-    ;; :underline 't
-)
-
-
-
-(copy-face 'Infu-Red 'markdown-header-face-1 )
-(copy-face 'Infu-Yellow 'markdown-header-face-2 )
-(copy-face 'Infu-Blue 'markdown-header-face-3 )
-(copy-face 'Infu-Green 'markdown-header-face-4 )
-(copy-face 'Infu-Purple 'markdown-header-face-5 )
-(copy-face 'markdown-header-face-3 'ido-subdir )
-(copy-face 'markdown-header-face-4 'ido-only-match )
-(copy-face 'markdown-header-face-3 'minibuffer-prompt )
-(copy-face 'markdown-header-face-4 'tab-bar-tab )
-(copy-face 'markdown-header-face-3 'tab-bar )
-(copy-face 'markdown-header-face-3 'tab-bar-tab-inactive )
-(copy-face 'Infu-Yellow 'region)
-(copy-face 'markdown-header-face-4 'mode-line )
-(copy-face 'Infu-Yellow 'doom-modeline-highlight)
-
-(copy-face 'markdown-header-face-2 'show-paren-match)
-(copy-face 'markdown-header-face-3 'mode-line-inactive)
-
-(set-face-attribute 'default nil
-:foreground "#FFFFFF"
-:background "gray2")
-
-(copy-face 'markdown-header-face-4 'mode-line-highlight)
-)
       	(use-package evil-terminal-cursor-changer
 	;first cosmetics I installed, beautify cursors;  
     :custom
@@ -921,18 +932,6 @@ evil-motion-state-cursor   '("yellow" box))
 (evil-terminal-cursor-changer-activate) ; or (etcc-on)
 )
 
-    ;make menus compact, good on Termux!
-;; Menu-bar disabled in early-init.el
-(setq tmm-mid-prompt '":") ; Menu Help prompt
-  "String to insert between shortcut and menu item.
-If nil, there will be no shortcuts.  It should not consist only of spaces,
-or else the correct item might not be found in the `*Completions*' buffer."
-  ;; :type 'string)
-(setq tmm-completion-prompt nil)
-  "Help text to insert on the top of the completion buffer.
- To save space, you can set this to nil,
- in which case the standard introduction text is deleted too."
-
         (use-package tabulated-list
 ; Make Packages buffer more compact ;
 ; tabulated-list sucks and it's so stiff
@@ -943,6 +942,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
       package-archive-column-width 1))
 
         (use-package doom-modeline
+    :defer 1
     :hook (after-init . doom-modeline-mode)
     :init 
 (setq doom-modeline-time nil) 
@@ -950,6 +950,9 @@ or else the correct item might not be found in the `*Completions*' buffer."
 ;; (setq find-file-visit-truename t)
 (setq doom-modeline-buffer-encoding 'nondefault)
     :config
+; good for smol screens
+(setq mode-line-compact 'long)
+(setq doom-modeline-window-width-limit 40)
     ;; custom clock:
 (setq doom-modeline-display-misc-in-all-mode-lines t)
 ;; (setq mode-line-misc-info '(:eval (emacs-uptime "%h:%m:%s")))
@@ -959,13 +962,11 @@ or else the correct item might not be found in the `*Completions*' buffer."
   (if (doom-modeline--active)
    '(:background "black" :foreground "white" :weight bold)
   ; '(:background "green" :foreground "white" :weight bold)
-  '(:background "#000000" :foreground "#0000AA" :weight light)))))
+  '(:background "#000000" :foreground "#0000AA" :weight light))))))
 
-(setq mode-line-compact 'long)
-(setq doom-modeline-window-width-limit 40))
 
       	(use-package mode-line-bell
-    :defer 1
+    :defer 2
     ; tackful modeline flash whenever bell rings ;
     :after doom-modeline
     :config (mode-line-bell-mode))
@@ -979,8 +980,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
 (set-face-attribute 'evil-goggles-paste-face nil
 :background "green")
 (set-face-attribute 'evil-goggles-yank-face nil
-:background "yellow")
-)
+:background "yellow"))
 
         (use-package evil-anzu
          ;number of searches;
@@ -998,12 +998,11 @@ or else the correct item might not be found in the `*Completions*' buffer."
     :config
 (global-hl-line-mode 1)
 (set-face-attribute 'hl-line nil
-     ;; :foreground "white"
-     :background "#202020"
      ;; :background "#333333"
      ;; :foreground "#FFFFFF"
      ;; :background "white"
-))
+     ;; :foreground "white"
+     :background "#202020"))
 
 	(use-package auto-dim-other-buffers
       	; self-explainatory ;
@@ -1014,9 +1013,10 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
 ;; Centered Cursor mode https://two-wrongs.com/centered-cursor-mode-in-vanilla-emacs.html
 ;; (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ; one line at a time
-
 (setq scroll-preserve-screen-position t
-      ;; scroll-conservatively 0
+      scroll-margin 0
+      ;; smooth-scroll-margin 1
+      scroll-conservatively 0
       maximum-scroll-margin 0.5
       scroll-margin 9999)
 ;; (setq scroll-conservatively 10000)
@@ -1042,6 +1042,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
     :config (minibar-mode t))
 
         (use-package window
+:disabled
 ; slapped this in but had no time to check it out yet
     :config
 (setq switch-to-buffer-obey-display-actions t
@@ -1083,6 +1084,17 @@ display-buffer-alist
 ; because shift-f10 rarely works on Termux keybs
 (global-set-key [tab-bar double-mouse-1] 'tmm-menubar)
 
+    ;make menus compact, good on Termux!
+;; Menu-bar disabled in early-init.el
+(setq tmm-mid-prompt '":") ; Menu Help prompt
+  "String to insert between shortcut and menu item.
+If nil, there will be no shortcuts.  It should not consist only of spaces,
+or else the correct item might not be found in the `*Completions*' buffer."
+  ;; :type 'string)
+(setq tmm-completion-prompt nil)
+  "Help text to insert on the top of the completion buffer.
+ To save space, you can set this to nil,
+ in which case the standard introduction text is deleted too."
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
@@ -1091,6 +1103,7 @@ display-buffer-alist
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
         (use-package parrot
+    :defer 2
 	;key moodlifter <3;
     :if window-system
     :config (parrot-mode)
@@ -1104,6 +1117,9 @@ display-buffer-alist
 
 ; personal organiser I want to see on startup ;
 ;; (find-file "~/xinfu/todo.md")
+(setq inhibit-startup-screen t)
+
+;; (setq initial-buffer-choice (lambda () (get-buffer-create "~/.emacs.d/welcome.md")))
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;; Make gc pauses faster by decreasing the threshold.

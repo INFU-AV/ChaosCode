@@ -35,6 +35,7 @@ alias c="clear"
 alias ncdu="ncdu -q"
 # this one requires aliases.sh to be "chmod +x"
 alias myTt="ENV=~/.config/aliases.sh ttyd -c Infu: sh"
+PS1='-]:INFU:[- '
 
 ## turn "ls" into "exa" for faster colourful usage
 alias ls="exa    -F  --group-directories-first -s modified"
@@ -46,9 +47,8 @@ alias lsor="exa -aF1 --group-directories-first -R"
 
 ## my Emacs aliases
 alias e="emacsclient -t"
-alias E="emacs -l ~/.emacs.d/EdiredTerm.el"
-alias ee="emacs -l ~/.emacs.d/EnonEmpty.el ~/xinfu/QN.org ~/xinfu/todo.org"
-alias Em="emacs -l ~/.emacs.d/EnonEmpty.el"
+alias es="emacsclient --create-frame --alternate-editor="""
+alias eX="pkill emacs"
 
 alias ip="ifconfig | grep inet"
 # serve files through python

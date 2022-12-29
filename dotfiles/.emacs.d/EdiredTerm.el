@@ -1,7 +1,0 @@
-(progn (dired-jump)
-(split-window)
-(term "bash")
-;; (eshell)
-(tab-bar-new-tab)
-(find-file "~/xinfu/todo.md")
-)

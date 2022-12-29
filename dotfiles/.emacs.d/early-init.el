@@ -90,8 +90,6 @@
 
 ;; (setq package-enable-at-startup nil)
 ;; (blink-cursor-mode nil)
-; 
-(setq inhibit-startup-screen "/data/data/com.termux/files/home/.emacs.d/welcome.md" )
 
 (setq-default frame-title-format '("%b - INFUmacs"))
 

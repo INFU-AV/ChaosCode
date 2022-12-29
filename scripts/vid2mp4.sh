@@ -73,7 +73,7 @@ echo "troubleshooting end"
 } ; trblshtng
 
 mp4() { ## conversion command
-ffmpeg -hide_banner -i "$ogname" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-1" $fps -crf "$crf" "$name"crf"$crf".mp4 && echo "$name converted with success!!"
+ffmpeg -hide_banner -i "$ogname" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-2" $fps -crf "$crf" "$name"crf"$crf".mp4 && echo "$name converted with success!!"
 return
 } # for some reason putting $fps in function above
 # in "double-quotes" puts 'single quotes' in the function

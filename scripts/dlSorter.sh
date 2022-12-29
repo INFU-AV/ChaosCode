@@ -51,7 +51,6 @@ else
     howto
     exit 1
 fi 
-
 trblshtng() { ## troubleshooting stats
 echo "troubleshooting start:"
 echo "User specified location: $DownLoads"
