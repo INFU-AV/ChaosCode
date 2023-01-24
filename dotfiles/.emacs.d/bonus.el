@@ -76,11 +76,6 @@ Version 2022-05-21"
   (grt/kill-current-buffer)
   (delete-window))
 
-(defun grt/scratchpad ()
-  "Switch to the scratch buffer."
-  (interactive)
-  (switch-to-buffer "*scratch*"))
-
 ;; from Doom:
 (defun +evil/shift-right ()
   "vnoremap < <gv"
@@ -102,6 +97,21 @@ replacing its contents."
   (interactive)
   (let ((evil-kill-on-visual-paste (not evil-kill-on-visual-paste)))
     (call-interactively #'evil-paste-after)))
+
+(defun NoCentering()
+(lambda()
+"Loosens up my default cursor centering
+Gifted by kind Emacs Crafters Discord user"
+(setq scroll-margin 1)
+(dolist (v (list 'scroll-preserve-screen-position
+        'scroll-conservatively
+        'maximum-scroll-margin ))
+(setq auto-window-vscroll t) ; (lags?)
+    (local-reset-symbol v)))
+(setq confirm-kill-processes nil) ; because my bash term threw errors on exit
+(defmacro local-reset-symbol (s)
+  `(progn (make-local-variable ,s)
+          (set ,s (eval (car (get ,s 'standard-value)))))))
 
 ;; make sure dired buffers end in a slash so we can identify them easily
 ;; lifted from: https://iqss.github.io/IQSS.emacs/init.html#make_emacs_friendlier_to_newcomers
@@ -158,26 +168,49 @@ replacing its contents."
 (set-face-attribute 'Infu-Purple nil
     :foreground "#FF33FF"
     :background "#330033")
+
 (copy-face 'Infu-Red 'markdown-header-face-1 )
 (copy-face 'Infu-Yellow 'markdown-header-face-2 )
 (copy-face 'Infu-Blue 'markdown-header-face-3 )
 (copy-face 'Infu-Green 'markdown-header-face-4 )
 (copy-face 'Infu-Purple 'markdown-header-face-5 )
-(copy-face 'markdown-header-face-3 'ido-subdir )
-(copy-face 'markdown-header-face-4 'ido-only-match )
-(copy-face 'markdown-header-face-3 'minibuffer-prompt )
-(copy-face 'markdown-header-face-4 'tab-bar-tab )
-(copy-face 'markdown-header-face-3 'tab-bar )
-(copy-face 'markdown-header-face-3 'tab-bar-tab-inactive )
+
+(copy-face 'Infu-Blue 'ido-subdir )
+(copy-face 'Infu-Green 'ido-only-match )
+(copy-face 'Infu-Blue 'minibuffer-prompt )
+(copy-face 'Infu-Green 'tab-bar-tab )
+(copy-face 'Infu-Blue 'tab-bar )
+(copy-face 'Infu-Blue 'tab-bar-tab-inactive )
 (copy-face 'Infu-Yellow 'region)
-(copy-face 'markdown-header-face-4 'mode-line )
+;; (copy-face 'Infu-Green 'mode-line )
 (copy-face 'Infu-Yellow 'doom-modeline-highlight)
-(copy-face 'markdown-header-face-2 'show-paren-match)
-(copy-face 'markdown-header-face-3 'mode-line-inactive)
+(copy-face 'Infu-Yellow 'show-paren-match)
+(set-face-attribute 'mode-line nil
+    :foreground "#FFFCFF"
+    :background "#330033")
 (set-face-attribute 'default nil
-:foreground "#FFFFFF"
-:background "gray2")
-(copy-face 'markdown-header-face-4 'mode-line-highlight)
+:foreground "#FFFFe0"
+:background "#220000")
+(set-face-attribute 'font-lock-keyword-face nil
+:foreground "#A529B0"
+:bold t
+:underline t)
+(set-face-attribute 'font-lock-builtin-face nil
+:foreground "palegreen"
+:underline t)
+(set-face-attribute 'font-lock-comment-face nil
+:foreground "salmon"
+:background "#002040")
+(copy-face 'Infu-Yellow-bg 'font-lock-constant-face)
+;; (set-face-attribute 'font-lock-constant-face nil
+;; :background ""
+;; :bold t
+;; :foreground "darkgreen")
+(copy-face 'Infu-Red 'font-lock-warning-face)
+(set-face-attribute 'font-lock-string-face nil
+:foreground "turquoise")
+(copy-face 'Infu-Green 'mode-line-highlight)
+(copy-face 'Infu-Blue 'mode-line-inactive)
 )
 
 ;;;;;;;;;;;;unused below:
@@ -261,41 +294,3 @@ replacing its contents."
 ;;            treemacs-fringe-indicator-mode))
 ;;   (when (fboundp this-minor-mode)
 ;;     (funcall this-minor-mode 0)))
-
-;;; when using emacs remotely, this crashes connection
-;;         (use-package huecycle
-;;     ;; :diminish huecycle-mode
-;;     ; colour-flashing eye candy ;
-;;     :defer 5
-;;     ;; :init
-;;     :config
-;;     (huecycle-set-faces
-;; ;; ((background . hl-line)
-;; ((background . Infu-Red)
-;;     :random-color-hue-range (0.0 1.0)
-;;     :random-color-saturation-range (0.6 0.9)
-;;     :random-color-luminance-range (0.7 0.8)
-;;     :speed 1.5 )
-;; ((foreground . (doom-modeline-evil-normal-state
-;; 		doom-modeline-evil-insert-state
-;; 		doom-modeline-buffer-major-mode
-;; 		line-number-current-line
-;; 		doom-modeline-lsp-success
-;; 		doom-modeline-panel
-;; 		doom-modeline-info))
-;;     :random-color-hue-range (0.0 1.0)
-;;     :random-color-saturation-range (0.8 1.0)
-;;     :random-color-luminance-range (0.5 0.8))
-;; ;; ((background . auto-dim-other-buffers-face)
-;; ;;     :random-color-hue-range (0.0 1.0)
-;; ;;     :random-color-saturation-range (0.3 0.8)
-;; ;;     :random-color-luminance-range (0.1 0.2))
-;; ((foreground . warning)
-;;     :color-list ("#FF0000" "#FF0000" "#DDAAAA")
-;;     :next-color-func huecycle-get-next-list-color
-;;     :speed 5.0)
-;; ((foreground . region)
-;;     :random-color-hue-range (0.0 1.0)
-;;     :random-color-saturation-range (0.9 1.0)
-;;     :random-color-luminance-range (0.5 0.8)))
-;; (huecycle-when-idle 1.4))

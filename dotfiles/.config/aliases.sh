@@ -51,12 +51,15 @@ alias es="emacsclient --create-frame --alternate-editor="""
 alias eX="pkill emacs"
 
 alias ip="ifconfig | grep inet"
-# serve files through python
-alias serve="python -m http.server"
+# alias serve="python -m http.server" # serve files through python
+
+# https://filebrowser.org/installation
+alias serve="filebrowser -p 20666 -r ."
+
 
 ## requires Termux:API
 alias send="termux-share -a send" # send your files around!
-alias clip="termux-clipboard-set" # use pipe before!
+alias view="termux-share -a view"
 alias To="termux-torch on"
 alias Tf="termux-torch off"
 # swap out my termux button bar for another

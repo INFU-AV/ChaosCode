@@ -8,7 +8,7 @@
 #(it works by checking first line of termux.properties)
 # after that, function "configADD" adds settings at the end of recreated properties file
 
-# WARNING: YOUR TERMUX.PROPERTIES WILL BE OVERWRITTEN TOTALLY! 
+# WARNING: YOUR TERMUX.PROPERTIES WILL BE OVERWRITTEN TOTALLY!
 # Navigate Headers:
 ##### CONFIG1
 ##### CONFIG2
@@ -71,27 +71,27 @@ extra-keys = [[ \
 	, \
     {key: 'END',popup: {macro: "F8"}} \
 	], [ \
-    {macro: "CTRL x @ h", display: '👁️'} \
+    {macro: "CTRL x @ h", display: 'H-👁️'} \
 	, \
-    {key: ':',popup: {macro: 'x'}} \
+    {key: ':', display: ': ^"', popup: {macro: '"'}} \
 	, \
     {key: '/',popup: {macro: 'BACKSLASH' }} \
 	, \
-    {key: 'LEFT',popup: {macro: "<<"}} \
+    {key: 'LEFT', display: '← ^<<', popup: {macro: "<<"}} \
 	, \
     {key: 'DOWN',popup: {macro: "PGDN"}} \
 	, \
-    {key: 'RIGHT',popup: {macro: ">>"}} \
+    {key: 'RIGHT', display: '→ ^>>', popup: {macro: ">>"}} \
 	], [ \
     {key: 'TAB', display: 'tab', popup: {macro: 'SHIFT TAB', display:'S-TAB'}} \
 	, \
-    {key: 'CTRL', display: 'ctrl', popup: {macro: 'ESC ,', display:'INFU eMAP'}} \
+    {key: 'CTRL', display: 'Ctrl ^$', popup: {macro: '$', display:'INFU eMAP'}} \
 	, \
-    {key: 'ALT', display: 'alt', popup: {macro: 'F1', display:'cum'}} \
+    {key: 'ALT', display: 'Alt ^~', popup: {macro: '~', display:'~'}} \
 	, \
-    {key: '-',popup: {macro: '_',popup: {macro: '+'}}} \
+    {key: '-', display: "- ^_", popup: {macro: '_',popup: {macro: '+'}}} \
 	, \
-    {key: '',popup: {macro: ''}} \
+    {key: 'SHIFT',popup: {macro: ''}} \
 	, \
     {key: 'DEL',popup: {macro: 'ALT x shell-command RETURN swap RETURN ALT x shell-command RETURN termux-reload-settings RETURN', display:'swap'}} \
 	]]
@@ -105,21 +105,23 @@ EndR
 }
 
 ##### SHARED OPTIONS
-configADD() {
-cat >> termux.properties << EOFa
+configADD() { cat >> termux.properties << EOF
+
 terminal-cursor-blink-rate=250
 terminal-onclick-url-open = true
 bell-character = vibrate
 volume-keys = volume-keys
-
 extra-keys-text-all-caps = false
-### Force black colors for drawer and dialogs
 use-black-ui = true
 disable-hardware-keyboard-shortcuts = true
-EOFa
+allow-external-apps = true
+# https://github.com/INFU-AV/ChaosCode
+EOF
 }
 
-# Rconfig2 ; configADD
+# Lconfig1
+# Rconfig2
+# configADD
 # termux-reload-settings
 # exit
 
@@ -127,22 +129,30 @@ EOFa
 
 # first we move to right directory to swap the file
 cd "$HOME/.termux/"
-
+echo "$(head -1 termux.properties)"
 # then, compare first line of actual termux.properties
+
 if [[ $(head -1 termux.properties) == "# LEFT" ]]
 then
-  # echo "currently using Lhanded script"
- echo "Setting R-variant:"
- echo "[       -   <---]"
-Rconfig2 ; configADD
+# echo "currently using Lhanded script"
+    echo "Setting R-variant:"
+    echo "[       -   <---]"
+    Rconfig2 ; configADD
 elif [[ $(head -1 termux.properties) == "# RIGHT" ]]
 then
-  # echo "currently using Rhanded script"
- echo "Setting L-variant:"
- echo "[--->   -       ]"
-Lconfig1 ; configADD
+# echo "currently using Rhanded script"
+    echo "Setting L-variant:"
+    echo "[--->   -       ]"
+    Lconfig1 ; configADD
 else
-echo "different files!"
+    echo "different files!"
+# Windows-type text is enough to upset the script ;C
 fi
 
+# if [[ $(tail -1 termux.properties) == "" ]]
+# then
+# elif
+# else
+# fi
+# configADD
 exec termux-reload-settings

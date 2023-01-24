@@ -40,13 +40,13 @@ cd() { # follow every "cd" command with "ls"
 mkcd() { # Make folder and enter it
 NAME=$1; mkdir -p "$NAME"; cd "$NAME"; }
 
-lsH() { # don't show hidden, but count them (works wonky)
-  local DIR="$*"
-  (( ! "$#" )) && DIR=$PWD; # if no DIR given, do $PWD
-exa -F --group-directories-first -s modified $DIR
-echo "[$(command ls -d .* | wc -l) hidden]"
-# echo "["$(($(command ls $DIR -A | wc -l) - $(command ls $DIR | wc -l)))" hidden]"
-} ; alias ls=lsH
+# lsH() { # don't show hidden, but count them (works wonky)
+#   local DIR="$*"
+#   (( ! "$#" )) && DIR=$PWD; # if no DIR given, do $PWD
+# exa -F --group-directories-first -s modified $DIR
+# echo "command ls "$*" | wc -l) hidden]"
+# # echo "["$(($(command ls $DIR -A | wc -l) - $(command ls $DIR | wc -l)))" hidden]"
+# } ; alias ls=lsH
 # would be cool to have ls that reacts on
 # previous ls command, becoming "ls -A"
 
@@ -72,6 +72,15 @@ else
 fi
 }
 
+# set OS-specific clipboard shortcuts
+if [[ "$OSTYPE" == "linux-android" ]]; then
+alias Clp="termux-clipboard-get"
+alias Clc="termux-clipboard-set" # use with pipe!
+elif [[ -n "$WSL_DISTRO_NAME" ]]; then
+alias Clp="powershell.exe Get-Clipboard"
+alias Clc="clip.exe" # use with pipe!
+fi
+
 swap() { # Termux Extra-Keys swapper
 "$HOME/.termux/swap.sh"
 } # using it as macro on extra-keys
@@ -95,8 +104,8 @@ export EDITOR="emacs"
 ##### LOAD EMACS DAEMON
 #
 # Check if daemon is on already
-if ! emacsclient -e 0 >&/dev/null; then
-    emacs -nw --no-x-resources --daemon &
+if ! emacsclient -e 0 >&/dev/null
+then emacs -nw --no-x-resources --daemon &
 # else emacsclient -c "$@"
 fi
 
@@ -169,7 +178,7 @@ fi
     export HISTIGNORE="&:bg:fg:ls"
 # don't put duplicate lines in the history
 # AND ignore lines starting with space
-    export HISTCONTROL=ignoreboth
+    export HISTCONTROL="erasedups:ignorespace"
 # Don't wanna see .lesshst file at all
     export LESSHISTFILE="/dev/null"
 # use TAB/S-TAB to cycle through files
@@ -207,6 +216,12 @@ fi
 # https://tldp.org/HOWTO/Bash-Prompt-HOWTO/clockt.html
 PS2='» '
 
+##### LESS
+# Set colors for less. Borrowed from:
+# https://wiki.archlinux.org/index.php/Color_output_in_console#less
+export LESS='-R --use-color -Dd+r$Du+b'
+# export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export MANPAGER="less -R --use-color -DC+B -DE+Rk -DM+Y -DP+WK -DS+Yk -Dd+m -Dk+m -Ds+y"
 # since we got spare time till Emacs turns on..
 # Flashy intro sequence lmao
 #
@@ -223,21 +238,33 @@ echo -e -n "${GR}HOME folder status${NC}: " ; if [[ $(command ls -a $HOME | wc -
 # sneaky ripgrep dependency lol
 echo -e -n "${GR}Emacs packages${NC}: $(rg -c 'use-package' ~/.emacs.d/init.el)"
 echo
-echo -e -n "${GR}Sober${NC}: $(( ($(date +%s) - $(date +%s -ud '2022-12-16 00:00:00'))/3600/24)) days"
-[[ "$OSTYPE" == "linux-android" ]] && neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config --color_blocks off
+echo -e -n "${GR}Sober${NC}: $(( ($(date +%s) - $(date +%s -ud '2023-01-08 00:00:00'))/3600/24)) days"
+[[ "$OSTYPE" == "linux-android" ]] && neofetch --off --disable title --cpu_speed on --cpu_temp C --memory_unit gib --uptime_shorthand tiny --no_config # --color_blocks off
 echo -e "${YW}=====The Lucky Number:${NC}[${RE}"$((RANDOM % 10))"${NC}]${YW}=====${NC}"
-}; FlashyIntro
+} ; FlashyIntro
 
+[[ "$OSTYPE" == "linux-android" && $SHLVL == 1 ]]
+# Get rid of system motd's
+[[ -e $PREFIX/etc/motd ]] &&  rm -- $PREFIX/etc/motd*
+# Same with that home history file
+[[ -e ~/.bash_history ]] && rm -f -- ~/.bash_history
+# ..And "less", I couldn't care any less
+[[ -e ~/.lesshst ]] && rm -f -- ~/.lesshst
+
+bootmacs() {
 # Loop to start-up Emacs
 # but not while inside Emacs!
 if [[ -z "$INSIDE_EMACS" ]]; then
-    emacsclient -t 
+    sleep 0.5
+    emacsclient -t
 else
     echo "Already inside Emacs!"
-unalias e
+    unalias e
 # can open files like that in term!
-alias e="emacsclient -n"
+    alias e="emacsclient -n"
+    alias eq="emacs -Q"
     echo "Remapping aliases.."
 fi
+} ; bootmacs
 
 # https://infu.fyi/
