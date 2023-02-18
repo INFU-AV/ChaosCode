@@ -37,13 +37,24 @@ alias ncdu="ncdu -q"
 alias myTt="ENV=~/.config/aliases.sh ttyd -c Infu: sh"
 PS1='-]:INFU:[- '
 
+alias diskspace="du -S | sort -n -r | less"
+
+alias ls='ls -h --color=auto --group-directories-first' # Alphabetical
+alias lS='ls -h --color=auto --group-directories-first -S -s -F' # largest files first 
+alias lx='ls -h --color=auto --group-directories-first -o -X' # by extension, detail
+# -a all files
+# -c creation time
+# -1 for 1 thing per line
+# -r to reverse list
+# -R for recursive
+
 ## turn "ls" into "exa" for faster colourful usage
-alias ls="exa    -F  --group-directories-first -s modified"
-alias lsa="exa  -aF  --group-directories-first -s modified"
-alias lse="exa  -aF  --group-directories-first -s extension"
-alias lsr="exa  -aF  --group-directories-first -R"
-alias lso="exa  -aF1 --group-directories-first -s name"
-alias lsor="exa -aF1 --group-directories-first -R"
+# alias ls="exa    -F  --group-directories-first -s modified"
+# alias lsa="exa  -aF  --group-directories-first -s modified"
+# alias lse="exa  -aF  --group-directories-first -s extension"
+# alias lsr="exa  -aF  --group-directories-first -R"
+# alias lso="exa  -aF1 --group-directories-first -s name"
+# alias lsor="exa -aF1 --group-directories-first -R"
 
 ## my Emacs aliases
 alias e="emacsclient -t"

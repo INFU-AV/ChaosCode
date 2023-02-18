@@ -1,32 +1,40 @@
 #!/usr/bin/env bash
 
 howto() {
-    cat >&2 <<"EOM"
-Video converter to super-compatible mp4 file!
-requires: ffmpeg
-$1 - file
-$2 - crt - default 21, the higher the lighter!
-$3 - fps - default is taken from the video
-output will be named "filename"crf"value".mp4
-lastly, you will be given filesize of output!
-===== INFU =====
+local RE=$(printf '\e[0;31m') # REd
+local NC=$(printf '\e[0m'   ) # NoColor
+local GR=$(printf '\e[1;32m') # GReen
+local YW=$(printf '\e[5;33m') # YelloW
+local LI=$(printf '\e[4m') # YelloW
+local CA=$(printf '\e[1;36m') # CyAn
+    cat >&2 <<EOM
+- = ${YW}[${NC}Super-Compatible mp4 Video Converter${YW}]${NC} = - 
+${GR}usage${NC}: ${GR}{${NC}number between 19-30${GR}}${NC} ${CA}*.mp4${NC}
+${RE}requires${NC}: ffmpeg
+${CA}output${NC} will be named "filename"crf${CA}"\$1"${NC}.mp4
+as bonus, you will be given filesize of output!
+(script will halt on any error!)
+${YW}=====ARGUMENTS${NC}:
+${GR}\$1${NC}: crt value (default 21)
+${GR}\$@${NC}: files to convert
+${YW}====="WHAT DOES CRT VALUE MEANS?"${NC}:
+The ${YW}higher${NC} the value, the ${YW}slimmer${NC} the video!
+  (at the ${RE}cost${NC} of potential ${RE}graphical crustiness${NC})
+${GR}Value 21${NC} should look like original video
+This script should ${RE}not${NC} damage audio at all*
+   *(if it does, pls tell me lol)
+${YW}=====${NC}INFU${YW}=====${NC}
 EOM
 }
 
+# leave on Errors, Unknown variables and failed pipes
+set -eo pipefail
+# Helpful word-splitting argument-handling
+IFS=$'\n\t'
 # uncomment for verbose script
 # set -x
 
-# todo: loopify it to be able to process multiple files
 # todo: optional flag to cut short files with size above 8mb
-# todo: redo parsing argunents
-# otherwise I'm stuck parsing vids like this:
-# find . -iname "*.mp4" -exec bash ~/scripts/vid2mp4.sh '{}' 30 30 \;
-# where '{}' is $1, and 2 values after are $2 and $3
-
-## Parsing arguments:
-# $1 - file
-# $2 - crf value (default 21)
-# $3 - fps (take from original if none specified)
 
 ## No arguments, error out
 if [[ "$#" -eq 0 ]] ; then
@@ -34,73 +42,60 @@ if [[ "$#" -eq 0 ]] ; then
     exit 1
 fi
 
-# $1 is later specified as $ogname
 
+main(){
 # check for crf value
-if [[ -n $2 && $2 -ge 21 && $2 -le 45 ]] ;then
-crf="$2"
-    else
-echo "crf value incorrect" && crf=21
-    fi
-# check for fps value
-if [[ -n $3 ]] ; then
-echo "fps located, assigning.."
-# fps="-filter:v fps="$3""
-# fps="-r "$3""
-printf -v fps '%s' "-r " "$3"
-    else
-echo "defaulting fps to original video.."
-fps=""
-    fi
+local crf=${1:-21}
+if [[ -n $1 && $1 -ge 21 && $1 -le 45 ]] ;then
+    crf="$1"
+  else
+    echo "crf value incorrect" && crf=21
+  fi
+shift
+# if there's no arguments after crf value, error out lol
+if [[ -z $1 ]] ; then
+    printf "No videos to process!\n"
+    printf "Displaying built-in help...\n\n"
+    howto
+    exit 2
+fi
+# trblshtng() { ## troubleshooting stats
+# echo "troubleshooting start:"
+# echo "1st. argument is $ogname"
+# echo "file location is $location"
+# echo "the extension is $ext"
+# echo "just filename is $name"
+# echo "the crf value is $crf"
+# echo "the fps value is $fps"
+# echo "troubleshooting end"
+# } ; trblshtng
 
-## setting variables
-ogname="$1"
-location="${1%/*.*}"
-ext="${1##*.}"
-name=$(basename "$1" ".$ext")
-# crf specified above
-# fps specified above
+## Main functionality
 
-trblshtng() { ## troubleshooting stats
-echo "troubleshooting start:"
-echo "1st. argument is $ogname"
-echo "file location is $location"
-echo "the extension is $ext"
-echo "just filename is $name"
-echo "the crf value is $crf"
-echo "the fps value is $fps"
-echo "troubleshooting end"
-} ; trblshtng
-
-mp4() { ## conversion command
-ffmpeg -hide_banner -i "$ogname" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-2" $fps -crf "$crf" "$name"crf"$crf".mp4 && echo "$name converted with success!!"
-return
-} # for some reason putting $fps in function above
-# in "double-quotes" puts 'single quotes' in the function
-# so it has to be unquoted
-
-## filesize check of the output:
-filesize() {
-echo "original video takes $(( $( stat -c %s "$ogname") / 1024 / 1024 )) megabytes"
-echo "converted one takes $(( $( stat -c %s "$name"crf"$crf".mp4) / 1024 / 1024 )) megabytes!"
+erroroopsie(){
+printf -- "\nconversion command has failed! "
+printf -- "did you put in correct arguments?\n"
+printf -- "FFMPEG should print error above for extra guidance!\n"
+exit 2
 }
 
-## Lets go!
+# main file-processing loop!
+for vid in "$@"; do
+    local location="${vid%/*.*}"
+    local ext="${vid##*.}"
+    local name=$(basename "$vid" ".$ext")
+# if conversion fails, exit the script
+    printf -- "Converting [${name}.${ext}] ... "
+    ffmpeg -hide_banner -loglevel 16 -i "$vid" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-1" -crf "$crf" "$name"crf"$crf".mp4 || erroroopsie
+printf -- "[DONE!]\n"
+# check filesize difference
+    printf -- "File [${name}.${ext}] video takes $(( $( stat -c %s "$vid") / 1024 / 1024 )) megabytes\n"
+    printf -- "While converted one takes $(( $( stat -c %s "$name"crf"$crf".mp4) / 1024 / 1024 )) megabytes!\n"
+    done
+printf -- "=====Converted all requested videos!=====\n"
+} ; main "$@"
 
-mp4 && echo "" && filesize
-
-unsetting() { # clean up after script
-echo "unsetting variables.."
-unset -v ogname
-unset -v location
-unset -v ext
-unset -v name
-unset -v crf
-unset -v fps
-echo "unsetting complete!"
-} ; unsetting
-# trblshtng # to check if unsetting worked
-exit
+exit # FINAL
 
 # additional debug/reading:
 # command to check for all values:

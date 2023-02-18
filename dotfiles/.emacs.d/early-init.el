@@ -11,35 +11,6 @@
 
 (setq site-run-file nil)
 
-;; (defvar better-gc-cons-threshold 134217728 ; 128mb
-;;   "The default value to use for `gc-cons-threshold'.
-
-;; If you experience freezing, decrease this.  If you experience stuttering, increase this.")
-
-;; (add-hook 'emacs-startup-hook
-;;           (lambda ()
-;;             (setq gc-cons-threshold better-gc-cons-threshold)
-;;             (setq file-name-handler-alist file-name-handler-alist-original)
-;;             (makunbound 'file-name-handler-alist-original)))
-;; ;; Garbage Collect when Emacs is out of focus
-;; ;; and avoid garbage collection when using minibuffer.
-
-;; (add-hook 'emacs-startup-hook
-;;           (lambda ()
-;;             (if (boundp 'after-focus-change-function)
-;;                 (add-function :after after-focus-change-function
-;;                               (lambda ()
-;;                                 (unless (frame-focus-state)
-;;                                   (garbage-collect))))
-;;               (add-hook 'after-focus-change-function 'garbage-collect))
-;;             (defun gc-minibuffer-setup-hook ()
-;;               (setq gc-cons-threshold (* better-gc-cons-threshold 2)))
-;;             (defun gc-minibuffer-exit-hook ()
-;;               (garbage-collect)
-;;               (setq gc-cons-threshold better-gc-cons-threshold))
-;;             (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
-;;             (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
-
 (setq package-native-compile t)
 (setq-default native-comp-speed 3)
 ;;    native-comp-deferred-compilation nil)
@@ -61,9 +32,8 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 
 (define-key menu-bar-tools-menu [games] nil)   ; Remove games menu
-(setq inhibit-startup-message t)
 
-(modify-all-frames-parameters 
+(modify-all-frames-parameters
         '((width . 80)
          (height . 35)
          (left . 0)
@@ -75,23 +45,24 @@
 ;; Make the initial buffer load faster by setting its mode to fundamental-mode
 (customize-set-variable 'initial-major-mode 'fundamental-mode)
 
-(when (fboundp 'startup-redirect-eln-cache)
-  (startup-redirect-eln-cache
-   (convert-standard-filenme
-      (expand-file-name  "var/eln-cache/" user-emacs-directory))))
+;; (when (fboundp 'startup-redirect-eln-cache)
+;;   (startup-redirect-eln-cache
+;;    (convert-standard-filenme
+;;       (expand-file-name  "var/eln-cache/" user-emacs-directory))))
 
 ;; y/n >>>>> yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq use-short-answers t)
 
 ;; GUI transparency
-(set-frame-parameter (selected-frame) 'alpha '(90 . 40))
-(add-to-list 'default-frame-alist '(alpha . (90 . 40)))
+(set-frame-parameter (selected-frame) 'alpha '(88 . 70))
+(add-to-list 'default-frame-alist '(alpha . (95 . 80)))
 
 ;; (setq package-enable-at-startup nil)
 ;; (blink-cursor-mode nil)
 
 (setq-default frame-title-format '("%b - INFUmacs"))
+(setq inhibit-startup-message t)
 
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)

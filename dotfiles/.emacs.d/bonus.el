@@ -102,13 +102,13 @@ replacing its contents."
 (lambda()
 "Loosens up my default cursor centering
 Gifted by kind Emacs Crafters Discord user"
-(setq scroll-margin 1)
 (dolist (v (list 'scroll-preserve-screen-position
         'scroll-conservatively
-        'maximum-scroll-margin ))
+        'maximum-scroll-margin))
 (setq auto-window-vscroll t) ; (lags?)
     (local-reset-symbol v)))
 (setq confirm-kill-processes nil) ; because my bash term threw errors on exit
+(setq maximum-scroll-margin 0.1)
 (defmacro local-reset-symbol (s)
   `(progn (make-local-variable ,s)
           (set ,s (eval (car (get ,s 'standard-value)))))))

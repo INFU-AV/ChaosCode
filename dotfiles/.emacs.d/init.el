@@ -52,7 +52,7 @@ The Yak-Shaving necessity!"
  (time-subtract after-init-time before-init-time)))
     gcs-done))
 ; Let's start this timer now! ;
-(add-hook 'emacs-startup-hook #'infu/display-startup-time)
+;; (add-hook 'emacs-startup-hook #'infu/display-startup-time)
 
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
@@ -333,7 +333,7 @@ The Yak-Shaving necessity!"
  ; Rewrite this one as relative path:
 (define-key infu-map (kbd "a") 'list-abbrevs)
 (define-key infu-map (kbd "A") (lambda() (interactive)(find-file "~/.emacs.d/my-abbrev.el")))
-(define-key infu-map (kbd "M-t") (lambda() (interactive)(find-file "~/xinfu/todo.md")))
+(define-key infu-map (kbd "t") (lambda() (interactive)(find-file "~/xinfu/todo.md")))
 (define-key infu-map (kbd "TAB") 'hs-minor-mode)
 (define-key infu-map (kbd "C-m") 'bookmark-bmenu-list)
 (define-key infu-map (kbd "m") 'bookmark-jump)
@@ -602,7 +602,7 @@ The Yak-Shaving necessity!"
 (setq dired-dwim-target t) ; suggest file-path of another open Dired buffer if there is one
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
     :custom
-((dired-listing-switches "-agho --group-directories-first")))
+((dired-listing-switches "-aghos --group-directories-first")))
 
 	(use-package diredfl
         ; beautify dired buffer
@@ -755,7 +755,7 @@ The Yak-Shaving necessity!"
 ;;            (kill-buffer buffer))))
 ;;   (delete-other-frames))
 
-        (use-package magit)
+        ;; (use-package magit)
  
         (use-package winner
         ; undo-window changes ;
@@ -807,7 +807,7 @@ The Yak-Shaving necessity!"
     :commands (free-keys))
 
         (use-package tab-bar
-    :defer 1
+    :defer 2
     :config
 (define-key evil-normal-state-map (kbd "g C-t") 'tab-bar-new-tab)
 (define-key evil-normal-state-map (kbd "g M-t") 'tab-close)
@@ -869,8 +869,8 @@ The Yak-Shaving necessity!"
 ;; (global-subword-mode 1)
 
 ; giving some kind of usefulness to scratch
-(setq initial-scratch-message (infu/display-startup-time))
-;; (setq initial-scratch-message (current-time-string))
+;; (setq initial-scratch-message (infu/display-startup-time))
+(setq initial-scratch-message (current-time-string))
 
 (setq inhibit-startup-echo-area-message "INFU")
 
@@ -927,7 +927,6 @@ The Yak-Shaving necessity!"
     ; tackful modeline flash whenever bell rings ;
     :after doom-modeline
     :config (mode-line-bell-mode))
-
 
       	(use-package evil-goggles
     :config
@@ -1079,7 +1078,6 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
  ;; (global-set-key [mouse-4] #'evil-previous-line)
  (global-set-key [mouse-3] #'ffap-at-mouse)
-
  ;; (global-set-key [mouse-5] #'evil-next-line)
 
     ) ; TERMUX-section end
