@@ -8,5 +8,3 @@ batch-converts WAV audio files into ones with a 16-bit;
 converts video to super-compatible mp4 file;
 ### dlSorter.sh
 sorts your "Downloads" folder;
-### wav2png.sh
-uses gnuplot to visualise short audio waveforms;
