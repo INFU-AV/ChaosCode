@@ -79,7 +79,7 @@ echo "There are total of $(command ls | wc -l) files inside downloads folder!"
 ### into their appropiate _sorted/folders:
     # Don't moan about no file to move: 2>/dev/null
 mv -- *.{pdf,txt,docx,log,org,bat,sh,el} _sorted/docs 2>/dev/null
-mv -- *.{wav,ogg,oga,,m4a,mp3,flac} _sorted/audio 2>/dev/null
+mv -- *.{wav,ogg,oga,opus,m4a,mp3,flac} _sorted/audio 2>/dev/null
 mv -- *.{vgz,vgm,nsf,aac,sf2,mid,spc,aiff} _sorted/audio 2>/dev/null
 mv -- *.{gif,bmp,png,tff,jpg,jpeg} _sorted/pics 2>/dev/null
 mv -- *.{mov,mp4,m4v,avi,webm,webp} _sorted/video 2>/dev/null
