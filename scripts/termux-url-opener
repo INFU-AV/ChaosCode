@@ -1,0 +1,82 @@
+#!/usr/bin/bash
+# Here be your ultimate termux link handler!
+# Share the link to Termux to perform specific actions for specific addresses
+# Requires:
+#   -yt-dlp
+#   -python-pip (that's where you download yt-dlp from)
+#   -ffmpeg
+#   -wget2
+#   -termux-api (and appropiate termux:api Android app)
+#   -jq
+# To make it easier for you, just do this in Termux:
+#   pkg update && pkg upgrade
+#   pkg install ffmpeg python-pip wget2 termux-api jq
+#   pip install yt-dlp
+# Code having line breaks, spaces & compact functions for phone readability
+# starting out with functions - so actions we want to have taken,
+# ending with regex mechanism to catch out websites we want, and assign
+# particular actions to each wanted website!  
+# FUNCTIONS = "What to do with a website?"
+# LINK REGEX = "How to recognise the website?"
+
+### INITIALIZATION:
+Url="$1"
+DestinationDir="$HOME/downloads"
+# Make sure downloads folder exist:
+[[ ! -d "$DestinationDir" ]] &&  mkdir "$DestinationDir"
+### FUNCTIONS:
+GetVid() { # Download Best Quality Video & Audio
+  yt-dlp --no-check-certificate -f 'bv,ba' --embed-thumbnail --embed-metadata \
+  --output "$DestinationDir/%(playlist|)s/%(title)s.%(ext)s" "$Url" ; }
+GetWAV() { # get Raw Audio from videos
+  [[ ! -d  "$DestinationDir/wavs" ]] && mkdir "$DestinationDir/wavs"
+  yt-dlp --extract-audio --audio-format wav --restrict-filenames \
+  --output "$DestinationDir/wavs/%(playlist|)s/%(title)s.wav" "$Url" ; }
+GetAudioAsOpus() { # Obtain Only Audio (Separates playlists to their own folders)
+  yt-dlp --extract-audio --audio-format opus --embed-metadata --embed-thumbnail \
+  --restrict-filenames --output "$DestinationDir/%(playlist|)s/%(title)s.opus" "$Url" ; }
+MirrorSite(){ # Make offline website backup
+  # https://www.guyrutenberg.com/2014/05/02/make-offline-mirror-of-a-site-using-wget/
+  wget2 --no-config --no-verbose --force-progress --mirror --convert-links \
+  --adjust-extension --wait=1 --random-wait --no-check-certificate \
+  --robots=off --page-requisites --no-parent --timestamping -P "$DestinationDir" "$Url" ; }
+BookmarkLink(){ # Save link in text file
+  printf '%s\n' "${Url}" >> "$DestinationDir/bookmarks.txt" ; }
+YourFunctionTemplate(){ # comment what it does
+  printf -- "only input it should take is \$Url variable\n"
+  printf -- "and quietly output in \$DestinationDir\n"
+  # place comments where you got the code from or what it does
+  printf '%s\n' "Put function name in link regex below, using CheckBox" \
+  "in case of error, make user know by inspecting files" \
+  "rather than keeping terminal alive for them, or bother with popups"
+}
+
+CheckBox(){ # Ask user for which functions to execute!
+  # argument 1 = "dialog title text on the top"
+  local Dialog_Text="$1"
+  # argument 2 = "FunctionNames,SeparatedBy,Comma"
+  local Comma_Separated_Functions="$2"
+  # put it all together as a dialog widget to check boxes:
+  local UserSelection
+  UserSelection=$(termux-dialog checkbox -t "$Dialog_Text" -v "$Comma_Separated_Functions" | jq -r '.text' )
+  # output from termux-dialog must be prepared though
+  UserSelection="${UserSelection:1:-1}" # stripping from square brackets
+  UserSelection=($(printf '%s\n' "${UserSelection//","/" "}")) # making an array out of it
+  # execute each function in array
+  for i in "${UserSelection[@]}";do "$i" ; done ; }
+
+WebsiteRegex(){ ### LINK REGEX WEBSITE RECOGNITION
+# as you might notice, I got only youtube/bandcamp/soundcloud for now
+# Hopefully examples below will help you to expand them on your own!
+if [[ "$Url" =~ ^.*youtu.*$ || "$Url" =~ ^.*youtube.*$ ]];then
+   CheckBox "Youtube detected!" "GetVid,GetWAV,GetAudioAsOpus,MirrorSite"
+elif [[ "$Url" =~ ^.*bandcamp.*$ ]];then
+  CheckBox "Bandcamp detected!" "GetWAV,GetAudioAsOpus,MirrorSite,BookmarkLink"
+# elif [[ "$Url" =~ ^.*PartOfYourURLHere.*$ ]]; then
+# CheckBox "YourWebSite Detected!" "GetAudioAsOpus,MirrorSite,BookmarkLink"
+elif [[ "$Url" =~ ^.*soundcloud.*$ ]];then
+  CheckBox "Soundcloud detected!" "GetVid,GetWAV,GetAudioAsOpus,MirrorSite"
+else CheckBox "Ordinary site!" "MirrorSite,BookmarkLink"
+fi ; } ; WebsiteRegex
+# after mathing a website, we pass on what to do with it
+# to "CheckBox" function above

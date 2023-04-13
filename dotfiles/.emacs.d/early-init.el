@@ -57,6 +57,7 @@
 ;; GUI transparency
 (set-frame-parameter (selected-frame) 'alpha '(88 . 70))
 (add-to-list 'default-frame-alist '(alpha . (95 . 80)))
+(setq frame-background-mode 'dark)
 
 ;; (setq package-enable-at-startup nil)
 ;; (blink-cursor-mode nil)

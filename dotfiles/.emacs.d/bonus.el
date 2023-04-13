@@ -188,6 +188,7 @@ Gifted by kind Emacs Crafters Discord user"
 (set-face-attribute 'mode-line nil
     :foreground "#FFFCFF"
     :background "#330033")
+; doesnt work in Termux, but crucial for my WSL
 (set-face-attribute 'default nil
 :foreground "#FFFFe0"
 :background "#220000")

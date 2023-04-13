@@ -12,7 +12,7 @@ local CA=$(printf '\e[1;36m') # CyAn
 ${GR}usage${NC}: ${GR}{${NC}number between 19-30${GR}}${NC} ${CA}*.mp4${NC}
 ${RE}requires${NC}: ffmpeg
 ${CA}output${NC} will be named "filename"crf${CA}"\$1"${NC}.mp4
-as bonus, you will be given filesize of output!
+as bonus, you will be given file-size of output!
 (script will halt on any error!)
 ${YW}=====ARGUMENTS${NC}:
 ${GR}\$1${NC}: crt value (default 21)
@@ -46,10 +46,10 @@ fi
 main(){
 # check for crf value
 local crf=${1:-21}
-if [[ -n $1 && $1 -ge 21 && $1 -le 45 ]] ;then
+if [[ -n $1 && $1 -ge 19 && $1 -le 45 ]] ;then
     crf="$1"
   else
-    echo "crf value incorrect" && crf=21
+    echo "crf value incorrect, defaulting to 21" && crf=21
   fi
 shift
 # if there's no arguments after crf value, error out lol
@@ -81,12 +81,12 @@ exit 2
 
 # main file-processing loop!
 for vid in "$@"; do
-    local location="${vid%/*.*}"
     local ext="${vid##*.}"
-    local name=$(basename "$vid" ".$ext")
+    # local name=$(basename "$vid" ".$ext") # no file location
+    local name="${vid%.*}" # original file location
 # if conversion fails, exit the script
     printf -- "Converting [${name}.${ext}] ... "
-    ffmpeg -hide_banner -loglevel 16 -i "$vid" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-1" -crf "$crf" "$name"crf"$crf".mp4 || erroroopsie
+    ffmpeg -hide_banner -i "$vid" -c:v libx264 -preset slow -pix_fmt yuv420p -profile:v high -vf "scale='min(1280,iw)':-2" -crf "$crf" -b:a 144k "$name"crf"$crf".mp4 || erroroopsie
 printf -- "[DONE!]\n"
 # check filesize difference
     printf -- "File [${name}.${ext}] video takes $(( $( stat -c %s "$vid") / 1024 / 1024 )) megabytes\n"
@@ -96,6 +96,7 @@ printf -- "=====Converted all requested videos!=====\n"
 } ; main "$@"
 
 exit # FINAL
+# to check audio: ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1
 
 # additional debug/reading:
 # command to check for all values:

@@ -6,8 +6,8 @@
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ; - - FORMATTING WARNING - -
 ;I format packages in way that
-; long lines are least idented
-; for better readibility on
+; long lines are least indented
+; for better readability on
 ; phones & thin small screens
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
@@ -306,15 +306,17 @@ The Yak-Shaving necessity!"
 ; (define-key infu-map (kbd "SPC") 'eval-region)
 (define-key infu-map (kbd ".") 'describe-char)
     ;; Ease of life functions
-(define-key infu-map (kbd ".") 'evil-window-prev)
 (define-key infu-map (kbd "SPC") 'evil-window-next)
 (define-key infu-map (kbd ",") 'evil-window-next)
+(define-key infu-map (kbd "X") 'copy-to-register)
+(define-key infu-map (kbd "x") 'insert-register)
 (define-key infu-map (kbd "y") 'yank-from-kill-ring)
 (define-key infu-map (kbd "(") 'check-parens)
     ; https://puntoblogspot.blogspot.com/2018/11/evilmacs-macros.html
 (define-key infu-map (kbd "Z") 'kmacro-start-macro)
 (define-key infu-map (kbd "z") 'kmacro-end-or-call-macro)
 
+(define-key infu-map (kbd "r") 'crux-recentf-find-file)
 (define-key infu-map (kbd "f") 'find-file)
 (define-key infu-map (kbd "F") 'find-file-other-tab)
 (define-key infu-map (kbd "C-f") 'find-file-other-window)
@@ -323,13 +325,14 @@ The Yak-Shaving necessity!"
 (define-key infu-map (kbd "B") 'switch-to-buffer-other-tab)
 (define-key infu-map (kbd "C-b") 'switch-to-buffer-other-window)
 
-(define-key infu-map (kbd "g") 'crux-duplicate-and-comment-current-line-or-region)
+;; (define-key infu-map (kbd "g") 'crux-duplicate-and-comment-current-line-or-region)
 
 (define-key infu-map (kbd "k") 'grt/kill-current-buffer) ;(B;)
 (define-key infu-map (kbd "K") 'kill-buffer-and-window)
 
 
 (define-key infu-map (kbd "d") 'dired)
+(define-key infu-map (kbd "D") 'dired-jump)
  ; Rewrite this one as relative path:
 (define-key infu-map (kbd "a") 'list-abbrevs)
 (define-key infu-map (kbd "A") (lambda() (interactive)(find-file "~/.emacs.d/my-abbrev.el")))
@@ -386,7 +389,8 @@ The Yak-Shaving necessity!"
 (define-key evil-normal-state-map (kbd "-") 'execute-extended-command)
 (define-key evil-normal-state-map (kbd "g c") 'comment-line)
 (define-key evil-motion-state-map (kbd "g C-c") 'crux-duplicate-and-comment-current-line-or-region)
-
+(define-key evil-normal-state-map (kbd "M-o") 'evil-window-next)
+(define-key evil-normal-state-map (kbd "M-i") 'evil-window-prev)
 (define-key evil-motion-state-map (kbd "<next>") 'evil-forward-paragraph)
 (define-key evil-motion-state-map (kbd "<prior>") 'evil-backward-paragraph)
 (define-key evil-insert-state-map (kbd "<next>") 'evil-forward-section-begin)
@@ -409,6 +413,13 @@ The Yak-Shaving necessity!"
 ;; soon adding hyper key
 (global-set-key (kbd "H-f" ) 'ffap)
 
+(xterm-mouse-mode 1)
+(global-set-key [mouse-4] (lambda ()
+                            (interactive)
+                            (scroll-down 1)))
+(global-set-key [mouse-5] (lambda ()
+                            (interactive)
+                            (scroll-up 1)))
         (use-package crux
     :defer t)
 
@@ -418,14 +429,14 @@ The Yak-Shaving necessity!"
     :config
     ;; (setq hydra-lv t)
     ;; (setq lv-use-separator t)
-  (defhydra hydra-windowANDtabs ( :columns 4 :hint nil )
-"lmao"
-   ("<down>"  evil-window-decrease-height "↓")
+  (defhydra hydra-windowANDtabs ( :columns 4 hints: nil )
+"Arrows to Resize"
+   ("<down>"  evil-window-decrease-height "^")
    ("<left>"  evil-window-decrease-width "←")
    ("<right>" evil-window-increase-width "→")
    ("<up>"    evil-window-increase-height "↑")
-   (":"       delete-window "" :color blue )
-   ("1"       delete-other-windows "☠" :color blue )
+   ;; (":"       delete-window "" :color blue )
+   ;; ("1"       delete-other-windows "☠" :color blue )
    ("8"       balance-windows "⚖" :color blue )
    ("d" dired-other-tab "Dired")
    ("f" find-file-other-tab "Find file")
@@ -434,20 +445,7 @@ The Yak-Shaving necessity!"
    ("0" tab-close "Close it")
    ("C-<right>" tab-next "Tab ->")
    ("c-<left>" tab-previous "<- Tab"))
-
-(define-key infu-map (kbd "W") 'hydra-windowANDtabs/body) ; capital `W'
-  (defhydra hydra-tab-bar (:color amaranth)
-   "Tab Bar Operations:"
-   ("t" tab-new "Just new" :column "New Tab")
-   ("d" dired-other-tab "Dired")
-   ("f" find-file-other-tab "Find file")
-   ("m" tab-move "Move it" :column "This Tab")
-   ("r" tab-rename "Rename it")
-   ("0" tab-close "Close it")
-   ("<right>" tab-next "Tab ->" :column "Navigation")
-   ("<left>" tab-previous "<- Tab")
-   ("q" nil "Exit" :exit t))
-(define-key infu-map (kbd "w") 'hydra-tab-bar/body) ; small `w'
+(define-key infu-map (kbd "w") 'hydra-windowANDtabs/body)
 )
 
         (use-package abbrev
@@ -583,8 +581,6 @@ The Yak-Shaving necessity!"
 (define-key evil-motion-state-map (kbd "g <up>") 'move-text-up)
 (define-key evil-motion-state-map (kbd "g <down>") 'move-text-down))
 
-(xterm-mouse-mode 1)
-
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;; ----- Dired-stuff:
@@ -683,10 +679,10 @@ The Yak-Shaving necessity!"
     :config (zk-desktop-setup-embark)
     :custom (zk-desktop-directory zk-directory))
 
-        (use-package org
+        (use-package org     :disabled 
     :defer t)
 
-        (use-package org-auto-tangle
+        (use-package org-auto-tangle     :disabled 
     :defer t
     :hook (org-mode . org-auto-tangle-mode))
 
@@ -757,6 +753,23 @@ The Yak-Shaving necessity!"
 
         ;; (use-package magit)
  
+        (use-package recentf
+    :defer 1
+    :config
+(setq recentf-max-saved-items 20000)
+(setq recentf-save-file (expand-file-name "data/recentf-save.el" user-emacs-directory))
+(recentf-mode 1)
+(setq recentf-exclude '((expand-file-name package-user-dir)
+                     ".cache"
+                     "cache"
+                     "recentf"
+                     "COMMIT_EDITMSG\\'"))
+  ;; (run-at-time nil (* 5 60) 'recentf-save-list)
+(run-with-idle-timer 60 t (lambda ()
+    (let ((save-silently t))
+    (recentf-save-list))))
+)
+
         (use-package winner
         ; undo-window changes ;
     :config (winner-mode t)
@@ -767,7 +780,7 @@ The Yak-Shaving necessity!"
         (use-package electric
 	; turn off all indents as I do my own here ;
     :config (electric-indent-mode 0)
-(electric-pair-mode 1))
+(electric-pair-mode 0))
 
         (use-package savehist
     :config (savehist-mode 1))
@@ -860,6 +873,8 @@ The Yak-Shaving necessity!"
 :background "#601010")
 )
 
+(setq ispell-program-name (executable-find "hunspell"))
+
 ;; (setq-default compilation-always-kill t)
 (setq-default compilation-ask-about-save nil) ; save all buffers on `compile'
 (setq-default compilation-scroll-output t)
@@ -880,11 +895,12 @@ The Yak-Shaving necessity!"
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 
-      	(use-package evil-terminal-cursor-changer
+(use-package evil-terminal-cursor-changer
     ;first cosmetics I installed, beautify cursors;
     :custom (setq etcc-use-color t)
-;; (setq etcc-term-type-override 'Dumb)
-    :config (setq
+    :config
+(setq etcc-term-type-override 'Dumb)
+(setq
  evil-insert-state-cursor   '("blue" box)
  evil-emacs-state-cursor    '("magenta" hbar)
  evil-normal-state-cursor   '("green" box)
@@ -892,7 +908,8 @@ The Yak-Shaving necessity!"
  evil-operator-state-cursor '("red" hbar)
  evil-replace-state-cursor  '("magenta" bar)
  evil-motion-state-cursor   '("yellow" box))
-; newest update seems to kill my colors and shapes, this fixes it:
+;; ; newest update seems to kill my colors and shapes, this fixes it:
+
 (defadvice evil-set-cursor (after etcc--evil-set-cursor (arg) activate)
   (unless (display-graphic-p)
     (etcc--evil-set-cursor)))
@@ -900,6 +917,12 @@ The Yak-Shaving necessity!"
     (unless (display-graphic-p)
     (etcc--evil-set-cursor-color arg)))
 (evil-terminal-cursor-changer-activate) ; or (etcc-on)
+;; (defun cursor-read-only-color ()
+;;   (if view-mode
+;;       (set-cursor-color "#953331")
+;;     (set-cursor-color "#0a9dff")))
+;; (add-hook 'view-mode-hook 'cursor-read-only-color)
+;; (add-hook 'buffer-list-update-hook 'cursor-read-only-color)
 )
 
         (use-package doom-modeline
@@ -1072,7 +1095,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
 ; ↓ setting default browser so
 ; ↓ Emacs asks which one to use per link
 ; ↓ Android-specific, requires "termux-api"
-    (advice-add 'browse-url-default-browser :override
+(advice-add 'browse-url-default-browser :override
 (lambda (url &rest args)
 (start-process-shell-command "open-url" nil (concat "am start -a android.intent.action.VIEW -d " url))))
 
@@ -1082,13 +1105,21 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
     ) ; TERMUX-section end
 
+(setq shell-file-name "bash")
+(setq shell-command-switch "-ic")
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;; ----- MS-Windows:
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;
  
-    (when (memq window-system '(w32))
+    ;; (if (display-graphic-p)
+    ;; package downloading happens before graphics are
+    ;; started, therefore no packages below would be installed
+    ;; also it'd mess up emacs-nw on windows eh
+
+        (when (string-equal system-name "IGPD2")
+
 ; For first time setup go edit system environment variables
 ; so we can easily access Emacs all around
 ; In system variables, do following:
@@ -1097,7 +1128,6 @@ or else the correct item might not be found in the `*Completions*' buffer."
 ; add to PATH=D:\full\path\to\emacs\bin
 ;; Without this Emacs might not see important tools!
 
-(setenv "EmacsPath" "d:/Programy/Emacs/emacshome/")
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
         (use-package parrot
@@ -1115,6 +1145,11 @@ or else the correct item might not be found in the `*Completions*' buffer."
 
 ;; Unfortunately on Windows there's no possibility
 ;; to have working term-mode, so Eshell is all we got
+
+
+        (when (memq window-system '(w32))
+
+(setenv "EmacsPath" "d:/Programy/Emacs/emacshome/")
 
 ;; Powershell as Emacs Shell
 (defun powershell (&optional buffer)
@@ -1160,6 +1195,7 @@ or else the correct item might not be found in the `*Completions*' buffer."
    ;; Use default-directory as last resource
    (t
     (shell-command (concat "start explorer /e,\"" (replace-regexp-in-string "/" "\\\\" default-directory) "\"")))))
+        )
 
         (use-package huecycle
     ;; :diminish huecycle-mode
@@ -1221,7 +1257,6 @@ mode-line-inactive))
 ; personal organiser I want to see on startup ;
 ;; (find-file "~/xinfu/todo.md")
 (setq inhibit-startup-screen t)
-
 ;; (setq initial-buffer-choice (lambda () (get-buffer-create "~/.emacs.d/welcome.md")))
 ;; (setq initial-buffer-choice "~/.emacs.d/welcome.md")
 ;;-;;-;;-;;-;;-;;-;;-;;-;;-;;

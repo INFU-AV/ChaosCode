@@ -73,7 +73,14 @@ if [ ! -d _sorted ]; then
 fi
 
 # file count:
-echo "There are total of $(command ls | wc -l) files inside downloads folder!"
+Count() { # https://github.com/dylanaraps/pure-bash-bible
+    # Usage: count /path/to/dir/*
+    #        count /path/to/dir/*/
+    printf '%s\n' "$#"
+}
+echo "There are total of $(Count *) files inside downloads folder!"
+echo "$(Count */) of those are directories!"
+
 
 ### moving files with specific {extensions}
 ### into their appropiate _sorted/folders:
@@ -87,7 +94,7 @@ mv -- *.{zip,rar,tar,7z,gz} _sorted/packages 2>/dev/null
 mv -- *.{gba,nes,gbc,gb,n64,smc,sfc,md,smd,gcm,nds,wad,3ds,pce,sav,srm,mcd,mcr} _sorted/roms 2>/dev/null
 mv -- * _sorted/misc 2>/dev/null
 # file count again:
-echo "Now file count shows $(command ls | wc -l), happy?"
+echo "Now file count shows $(Count *), happy?"
 # coming back to prev dir (apparently not needed)
 # command cd - >&/dev/null
 } ; main "$1"
