@@ -72,7 +72,7 @@ main(){
   printf -- "choose which function to run and process arguments!\n"
   PS3="Select an option:"
   select operation in ${all_the_functions[@]}; do
-    for  i in "$@" ; do "$operation ; done ; done
+    for  i in "$@" ; do $operation ; done ; done
 } ; main "$@"
 ### RESOURCES:
 ## Good commands mostly from here:
